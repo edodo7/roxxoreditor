@@ -11,7 +11,8 @@ def read(filename):
         filename -- The name of the file with the contents to process.
     """
     with open(filename, 'r') as finput:
-    	return json.loads(finput.read())
+        content = json.loads(finput.read())
+    return content
 
 
 def write(filename, content):
