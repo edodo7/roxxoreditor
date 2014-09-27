@@ -53,10 +53,10 @@ class RoxxorEditorWidget(QtGui.QWidget):
         self.textField = QtGui.QTextEdit()
 
         # Buttons
-        self.saveModificationsButton = QtGui.QPushButton("Save")
-        self.connect(self.saveModificationsButton,
+        self.restoreModificationsButton = QtGui.QPushButton("Restore old value")
+        self.connect(self.restoreModificationsButton,
                      QtCore.SIGNAL("clicked()"),
-                     self.saveButtonClicked)
+                     self.restoreButtonClicked)
 
         self.leftSubSubLayout = QtGui.QHBoxLayout()
         self.leftSubSubLayout.addWidget(self.treeWidget)
@@ -64,7 +64,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
         self.rightSubSubLayout.addWidget(self.keyLabel)
         self.rightSubSubLayout.addWidget(valueLabel)
         self.rightSubSubLayout.addWidget(self.textField)
-        self.rightSubSubLayout.addWidget(self.saveModificationsButton)
+        self.rightSubSubLayout.addWidget(self.restoreModificationsButton)
 
         self.subLayout = QtGui.QHBoxLayout()
         self.subLayout.addLayout(self.leftSubSubLayout)
@@ -122,6 +122,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
     def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
         """ Action performed when an item in the QTreeWidget is clicked.
         """
+        self.saveValue()
         if self.isLeaf(item):
             dataSought = self.data
             self.path = self.getTreePath(item)
@@ -136,8 +137,23 @@ class RoxxorEditorWidget(QtGui.QWidget):
             self.pathLabel.setText("/"+'>'.join(self.path))
             self.textField.setText(str(dataSought))
 
-    def saveButtonClicked(self):
+    def restoreButtonClicked(self):
         """ Action performed when the save button is clicked.
+        """
+        dataStruct = self.data
+        for i in range(len(self.path)-1):
+            try:
+                j = int(self.path[i])
+                dataStruct = dataStruct[j]
+            except ValueError:
+                dataStruct = dataStruct[self.path[i]]
+        try:
+            self.textField.setText(str(dataStruct[int(self.key)]))
+        except ValueError:
+            self.textField.setText(str(dataStruct[self.key]))
+        
+    def saveValue(self):
+        """
         """
         dataStruct = self.data
         for i in range(len(self.path)-1):
@@ -166,6 +182,14 @@ class RoxxorEditorWidget(QtGui.QWidget):
         """
         return item.childCount() == 0
 
+    def setData(self, data: str):
+        """
+        """
+        self.data = data
+        self.loadDataIntoTreeWidget(self.data, self.rootItem)
+        self.treeWidget.sortItems(0,0)
+
+
 class RoxxorEditorWindow(QtGui.QMainWindow):
     """
     """
@@ -176,6 +200,8 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.setWindowTitle("Roxxor Editor")
         self.roxxorWidget = RoxxorEditorWidget()
         self.setCentralWidget(self.roxxorWidget)
+
+        self.fileName = None
 
         # Actions
         openAction = QtGui.QAction('Open', self)
@@ -208,23 +234,29 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
     def openFile(self):
         """
         """
-        fileName = QtGui.QFileDialog.getOpenFileName(self, 'Open a file',
-                    str(os.path.expanduser("~")))
+        self.fileName = QtGui.QFileDialog.getOpenFileName(self, 'Open a file',
+                        str(os.path.expanduser("~")))
         # TODO
         modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                   '..',
                                                   'modules',
                                                   'jsontools.py')
         jsontools = imp.load_source('jsontools', modulePath)
-        self.roxxorWidget.data = jsontools.read(fileName)
-        self.roxxorWidget.loadDataIntoTreeWidget(self.roxxorWidget.data, self.roxxorWidget.rootItem)
-        self.roxxorWidget.treeWidget.sortItems(0,0)
 
+        self.roxxorWidget.setData(jsontools.read(self.fileName))
 
     def saveModifications(self):
         """
         """
-        pass
+        # TODO
+        modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                  '..',
+                                                  'modules',
+                                                  'jsontools.py')
+        jsontools = imp.load_source('jsontools', modulePath)
+
+        jsontools.write(self.fileName, self.roxxorWidget.data)
+        
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
