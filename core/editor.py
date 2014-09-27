@@ -18,14 +18,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
     def __init__(self):
         """
         """
-        # TODO wchange when the module is ready
-        self.data = {"roxxor": "great",
-                     "tamaman": "good",
-                     "list": [1,2,3],
-                     "dic": {"mydic": "good",
-                             "another": {"dico": [True, False, True]}
-                            }
-                    }
+        self.data = {}
 
         self.key = None
         self.path = []
@@ -123,7 +116,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
         """
         if self.path:
             self.saveValue()
-        if self.isLeaf(item):
+        if self.data and self.isLeaf(item):
             dataSought = self.data
             self.path = self.getTreePath(item)
             for element in self.path:
