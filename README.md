@@ -1,4 +1,4 @@
-roxxoreditor
+Roxxor Editor
 ============
 
 JSON/XML editor that roxx
