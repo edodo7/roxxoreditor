@@ -24,13 +24,14 @@ class RoxxorEditor(QtGui.QWidget):
                              "another": {"dico": [True, False, True]}
                             }
                     }
-        
+
         self.key = None
         self.path = []
 
         QtGui.QWidget.__init__(self)
         self.treeWidget = QtGui.QTreeWidget()
         self.treeWidget.setHeaderHidden(True)
+        self.treeWidget.setAlternatingRowColors(True)
         self.rootItem = QtGui.QTreeWidgetItem()
         self.rootItem.setData(0, 0, "root")
         self.treeWidget.insertTopLevelItem(0, self.rootItem)
