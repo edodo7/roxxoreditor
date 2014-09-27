@@ -4,13 +4,15 @@
 """
 
 import sys
+import os.path
+import imp
 from signal import *
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 KEY_LABEL_DEFAULT = "Key: "
 
-class RoxxorEditor(QtGui.QWidget):
+class RoxxorEditorWidget(QtGui.QWidget):
     """ The GUI of the editor.
     """
     def __init__(self):
@@ -39,8 +41,8 @@ class RoxxorEditor(QtGui.QWidget):
                      QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                      self.onClickItem)
 
-        self.loadDataIntoTreeWidget(self.data, self.rootItem)
-        self.treeWidget.sortItems(0,0)
+        # self.loadDataIntoTreeWidget(self.data, self.rootItem)
+        # self.treeWidget.sortItems(0,0)
 
         # Labels
         self.pathLabel = QtGui.QLabel("/")
@@ -164,8 +166,68 @@ class RoxxorEditor(QtGui.QWidget):
         """
         return item.childCount() == 0
 
+class RoxxorEditorWindow(QtGui.QMainWindow):
+    """
+    """
+    def __init__(self):
+        """
+        """
+        QtGui.QMainWindow.__init__(self)
+        self.setWindowTitle("Roxxor Editor")
+        self.roxxorWidget = RoxxorEditorWidget()
+        self.setCentralWidget(self.roxxorWidget)
+
+        # Actions
+        openAction = QtGui.QAction('Open', self)
+        openAction.setShortcut('Ctrl+O')
+        openAction.setStatusTip('Open a file')
+        openAction.triggered.connect(self.openFile)
+
+        saveAction = QtGui.QAction('Save', self)
+        saveAction.setShortcut('Ctrl+S')
+        saveAction.setStatusTip('Save the modifications')
+        saveAction.triggered.connect(self.saveModifications)
+        
+        exitAction = QtGui.QAction('Exit', self)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('Exit application')
+        exitAction.triggered.connect(self.close)
+
+        # Tool bar
+        toolBar = self.addToolBar('Open')
+        toolBar.setMovable(False)
+
+        toolBar.addAction(openAction)
+        toolBar.addAction(saveAction)
+        toolBar.addAction(exitAction)
+
+        # Put the window on the center of the screen
+        self.move(QtGui.QApplication.desktop().screen().rect().center()-
+                  self.rect().center())
+
+    def openFile(self):
+        """
+        """
+        fileName = QtGui.QFileDialog.getOpenFileName(self, 'Open a file',
+                    str(os.path.expanduser("~")))
+        # TODO
+        modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                  '..',
+                                                  'modules',
+                                                  'jsontools.py')
+        jsontools = imp.load_source('jsontools', modulePath)
+        self.roxxorWidget.data = jsontools.read(fileName)
+        self.roxxorWidget.loadDataIntoTreeWidget(self.roxxorWidget.data, self.roxxorWidget.rootItem)
+        self.roxxorWidget.treeWidget.sortItems(0,0)
+
+
+    def saveModifications(self):
+        """
+        """
+        pass
+
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-    roxxor = RoxxorEditor()
+    roxxor = RoxxorEditorWindow()
     roxxor.show()
     sys.exit(app.exec_())
