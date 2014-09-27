@@ -1,6 +1,6 @@
 #!/bin/python3
 # -*- coding: utf-8 -*-
-"""
+""" This script contains the core of the Roxxor Editor.
 """
 
 import sys
@@ -16,7 +16,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
     """ The GUI of the editor.
     """
     def __init__(self):
-        """
+        """ Initialization of the object.
         """
         self.data = {}
 
@@ -143,7 +143,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
             self.textField.setText(str(dataStruct[self.key]))
         
     def saveValue(self):
-        """
+        """ Save the value that has been modified precedently in the memory.
         """
         dataStruct = self.data
         for i in range(len(self.path)-1):
@@ -172,8 +172,8 @@ class RoxxorEditorWidget(QtGui.QWidget):
         """
         return item.childCount() == 0
 
-    def setData(self, data: str):
-        """
+    def setData(self, data):
+        """ Set the instance variable self.data and refresh the tree view.
         """
         self.data = data
         self.loadDataIntoTreeWidget(self.data, self.rootItem)
@@ -181,10 +181,10 @@ class RoxxorEditorWidget(QtGui.QWidget):
 
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
-    """
+    """ The main window of the editor.
     """
     def __init__(self):
-        """
+        """ Initialization of the object.
         """
         QtGui.QMainWindow.__init__(self)
         self.setWindowTitle("Roxxor Editor")
@@ -223,7 +223,8 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
                   self.rect().center())
 
     def openFile(self):
-        """
+        """ The action performed when the button "Open" in the tool bar
+            is clicked.
         """
         self.fileName = QtGui.QFileDialog.getOpenFileName(self, 'Open a file',
                         str(os.path.expanduser("~")))
@@ -237,7 +238,8 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.roxxorWidget.setData(jsontools.read(self.fileName))
 
     def saveModifications(self):
-        """
+        """ The action performed when the button "Save" un the tool bar
+            is clicked.
         """
         # TODO
         modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -248,9 +250,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
 
         jsontools.write(self.fileName, self.roxxorWidget.data)
         
-
-if __name__ == "__main__":
+def main():
     app = QtGui.QApplication(sys.argv)
     roxxor = RoxxorEditorWindow()
     roxxor.show()
     sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()    
