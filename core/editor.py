@@ -8,6 +8,8 @@ from signal import *
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+KEY_LABEL_DEFAULT = "Key: "
+
 class RoxxorEditor(QtGui.QWidget):
     """ The GUI of the editor.
     """
@@ -35,14 +37,28 @@ class RoxxorEditor(QtGui.QWidget):
 
         self.loadDataIntoTreeWidget(self.data, self.rootItem)
 
-        self.label = QtGui.QLabel("")
-        self.textField = None
 
-        self.layout = QtGui.QHBoxLayout()
-        self.rightSubLayout = QtGui.QVBoxLayout()
-        self.rightSubLayout.addWidget(self.label)
-        self.layout.addWidget(self.treeWidget)
-        self.layout.addLayout(self.rightSubLayout)
+        self.pathLabel = QtGui.QLabel("/")
+        self.keyLabel = QtGui.QLabel(KEY_LABEL_DEFAULT)
+        valueLabel = QtGui.QLabel("Value:")
+
+        self.textField = QtGui.QTextEdit()
+
+        self.leftSubSubLayout = QtGui.QHBoxLayout()
+        self.leftSubSubLayout.addWidget(self.treeWidget)
+        self.rightSubSubLayout = QtGui.QVBoxLayout()
+        self.rightSubSubLayout.addWidget(self.keyLabel)
+        self.rightSubSubLayout.addWidget(valueLabel)
+        self.rightSubSubLayout.addWidget(self.textField)
+
+        self.subLayout = QtGui.QHBoxLayout()
+        self.subLayout.addLayout(self.leftSubSubLayout)
+        self.subLayout.addLayout(self.rightSubSubLayout)
+
+        self.layout = QtGui.QVBoxLayout()
+        self.layout.addWidget(self.pathLabel)
+        self.layout.addLayout(self.subLayout)
+
         self.setLayout(self.layout)
         self.resize(600, 400)
 
@@ -89,7 +105,7 @@ class RoxxorEditor(QtGui.QWidget):
         return path
 
     def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
-        """
+        """ Action performed when an item in the QTreeWidget is clicked.
         """
         if self.isLeaf(item):
             dataSought = self.data
@@ -100,14 +116,14 @@ class RoxxorEditor(QtGui.QWidget):
                     dataSought = dataSought[i]
                 except ValueError:
                     dataSought = dataSought[element]
-            if not self.rightSubLayout.isEmpty():
-                self.rightSubLayout.removeWidget(self.textField)
-            self.label.setText(str(path[len(path)-1]))
-            self.textField = QtGui.QTextEdit()
+            self.keyLabel.setText(KEY_LABEL_DEFAULT+str(path[len(path)-1]))
+            self.pathLabel.setText("/"+'>'.join(path))
             self.textField.setText(str(dataSought))
-            self.rightSubLayout.addWidget(self.textField)
 
     def isLeaf(self, item: QtGui.QTreeWidgetItem):
+        """ Return True if the item is a leaf of the QtreeWidget else
+            return False.
+        """
         return item.childCount() == 0
 
 if __name__ == "__main__":
