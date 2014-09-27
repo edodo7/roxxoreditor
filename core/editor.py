@@ -34,9 +34,6 @@ class RoxxorEditorWidget(QtGui.QWidget):
                      QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                      self.onClickItem)
 
-        # self.loadDataIntoTreeWidget(self.data, self.rootItem)
-        # self.treeWidget.sortItems(0,0)
-
         # Labels
         self.pathLabel = QtGui.QLabel("/")
         self.keyLabel = QtGui.QLabel(KEY_LABEL_DEFAULT)
