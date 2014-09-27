@@ -25,6 +25,9 @@ class RoxxorEditor(QtGui.QWidget):
                             }
                     }
         
+        self.key = None
+        self.path = []
+
         QtGui.QWidget.__init__(self)
         self.treeWidget = QtGui.QTreeWidget()
         self.treeWidget.setHeaderHidden(True)
@@ -37,12 +40,19 @@ class RoxxorEditor(QtGui.QWidget):
 
         self.loadDataIntoTreeWidget(self.data, self.rootItem)
 
-
+        # Labels
         self.pathLabel = QtGui.QLabel("/")
         self.keyLabel = QtGui.QLabel(KEY_LABEL_DEFAULT)
         valueLabel = QtGui.QLabel("Value:")
 
+        # Text fields
         self.textField = QtGui.QTextEdit()
+
+        # Buttons
+        self.saveModificationsButton = QtGui.QPushButton("Save")
+        self.connect(self.saveModificationsButton,
+                     QtCore.SIGNAL("clicked()"),
+                     self.saveButtonClicked)
 
         self.leftSubSubLayout = QtGui.QHBoxLayout()
         self.leftSubSubLayout.addWidget(self.treeWidget)
@@ -50,6 +60,7 @@ class RoxxorEditor(QtGui.QWidget):
         self.rightSubSubLayout.addWidget(self.keyLabel)
         self.rightSubSubLayout.addWidget(valueLabel)
         self.rightSubSubLayout.addWidget(self.textField)
+        self.rightSubSubLayout.addWidget(self.saveModificationsButton)
 
         self.subLayout = QtGui.QHBoxLayout()
         self.subLayout.addLayout(self.leftSubSubLayout)
@@ -109,19 +120,44 @@ class RoxxorEditor(QtGui.QWidget):
         """
         if self.isLeaf(item):
             dataSought = self.data
-            path = self.getTreePath(item)
-            for element in path:
+            self.path = self.getTreePath(item)
+            for element in self.path:
                 try:
                     i = int(element)
                     dataSought = dataSought[i]
                 except ValueError:
                     dataSought = dataSought[element]
-            self.keyLabel.setText(KEY_LABEL_DEFAULT+str(path[len(path)-1]))
-            self.pathLabel.setText("/"+'>'.join(path))
+            self.key = self.path[len(self.path)-1]
+            self.keyLabel.setText(KEY_LABEL_DEFAULT+str(self.key))
+            self.pathLabel.setText("/"+'>'.join(self.path))
             self.textField.setText(str(dataSought))
 
+    def saveButtonClicked(self):
+        """ Action performed when the save button is clicked.
+        """
+        dataStruct = self.data
+        for i in range(len(self.path)-1):
+            try:
+                j = int(self.path[i])
+                dataStruct = dataStruct[j]
+            except ValueError:
+                dataStruct = dataStruct[self.path[i]]
+        try:
+            try:
+                oldType = type(dataStruct[int(self.key)])
+                dataStruct[int(self.key)] = oldType(self.textField.toPlainText())
+            except ValueError:
+                oldType = type(dataStruct[self.key])
+                dataStruct[self.key] = oldType(self.textField.toPlainText())
+        except TypeError:
+            try:
+                self.textField.setText(str(dataStruct[int(self.key)]))
+            except ValueError:
+                self.textField.setText(str(dataStruct[self.key]))
+            print("Wrong entry") # TODO popup
+
     def isLeaf(self, item: QtGui.QTreeWidgetItem):
-        """ Return True if the item is a leaf of the QtreeWidget else
+        """ Return True if the item is a leaf of the QTreeWidget else
             return False.
         """
         return item.childCount() == 0
