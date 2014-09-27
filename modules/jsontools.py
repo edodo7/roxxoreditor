@@ -10,7 +10,8 @@ def read(filename):
     Keyword arguments:
         filename -- The name of the file with the contents to process.
     """
-    return json.loads(filename)
+    with open(filename, 'r') as finput:
+    	return json.loads(finput.read())
 
 
 def write(filename, content):
