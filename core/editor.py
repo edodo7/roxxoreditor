@@ -60,12 +60,12 @@ class RoxxorEditor(QtGui.QWidget):
             for key in data.keys():
                 if type(data[key]) == dict:
                     newParent = QtGui.QTreeWidgetItem()
-                    newParent.setText(0, str(key))
+                    newParent.setText(0, str(key)+" {}")
                     parent.addChild(newParent)
                     self.loadDataIntoTreeWidget(data[key], newParent)
                 elif type(data[key]) == list:
                     newParent = QtGui.QTreeWidgetItem()
-                    newParent.setText(0, str(key))
+                    newParent.setText(0, str(key)+" []")
                     parent.addChild(newParent)
                     self.loadDataIntoTreeWidget(data[key], newParent)
                 else:
@@ -80,11 +80,11 @@ class RoxxorEditor(QtGui.QWidget):
         path = [item.text(0)]
         parent = item.parent()
         if parent != None:
-            path.insert(0, parent.text(0))
+            path.insert(0, parent.text(0).split()[0])
         while parent != None:
             parent = parent.parent()
             if parent != None:
-                path.insert(0, parent.text(0))
+                path.insert(0, parent.text(0).split()[0])
         path.pop(0)
         return path
 
