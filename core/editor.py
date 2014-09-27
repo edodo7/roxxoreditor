@@ -20,14 +20,17 @@ class RoxxorEditor(QtGui.QWidget):
         self.rootItem = QtGui.QTreeWidgetItem()
         self.rootItem.setData(0, 0, "root")
         self.treeWidget.insertTopLevelItem(0, self.rootItem)
-        self.connect (self.treeWidget, QtCore.SIGNAL ("itemClicked(QTreeWidgetItem*, int)"), self.onClickItem)
-        layout = QtGui.QVBoxLayout()
+        self.connect(self.treeWidget,
+                     QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
+                     self.onClickItem)
+        layout = QtGui.QHBoxLayout()
         layout.addWidget(self.treeWidget)
+        layout.addWidget(QtGui.QTextEdit())
         self.setLayout(layout)
         self.resize(600, 400)
 
     def loadDataIntoTreeWidget(self, data, parent):
-        """
+        """ Load data from a list or a dictionary into the TreeWidget.
         """
         if type(data) == str or type(data) == int or type(data) == bool or type(data) == None:
             item = QtGui.QTreeWidgetItem()
@@ -53,11 +56,24 @@ class RoxxorEditor(QtGui.QWidget):
         else:
             raise TypeError
 
-    def onClickItem(self, item, i):
+    def getTreePath(self, item: QtGui.QTreeWidgetItem):
+        """ Return the list of ancestors of the item passed in parameters
+            (itself included) sorted in ascending order.
+        """
+        path = [item.text(0)]
+        parent = item.parent()
+        if parent != None:
+            path.insert(0, parent.text(0))
+        while parent != None:
+            parent = parent.parent()
+            if parent != None:
+                path.insert(0, parent.text(0))
+        return path
+
+    def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
         """
         """
-        print(str(item.text(0)))
-        print(str(item.parent().text(0)))
+        print(self.getTreePath(item))
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
