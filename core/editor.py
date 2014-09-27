@@ -39,6 +39,7 @@ class RoxxorEditor(QtGui.QWidget):
                      self.onClickItem)
 
         self.loadDataIntoTreeWidget(self.data, self.rootItem)
+        self.treeWidget.sortItems(0,0)
 
         # Labels
         self.pathLabel = QtGui.QLabel("/")
@@ -76,7 +77,7 @@ class RoxxorEditor(QtGui.QWidget):
     def loadDataIntoTreeWidget(self, data, parent):
         """ Load data from a list or a dictionary into the TreeWidget.
         """
-        if type(data) == str or type(data) == int or type(data) == bool or type(data) == None:
+        if type(data) == str or type(data) == int or type(data) == bool or data == None:
             item = QtGui.QTreeWidgetItem()
             item.setText(0, str(data))
             parent.addChild(item)
