@@ -14,6 +14,15 @@ class RoxxorEditor(QtGui.QWidget):
     def __init__(self):
         """
         """
+        # TODO wchange when the module is ready
+        self.data = {"roxxor": "great",
+                     "tamaman": "good",
+                     "list": [1,2,3],
+                     "dic": {"mydic": "good",
+                             "another": {"dico": [True, False, True]}
+                            }
+                    }
+        
         QtGui.QWidget.__init__(self)
         self.treeWidget = QtGui.QTreeWidget()
         self.treeWidget.setHeaderHidden(True)
@@ -23,10 +32,18 @@ class RoxxorEditor(QtGui.QWidget):
         self.connect(self.treeWidget,
                      QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                      self.onClickItem)
-        layout = QtGui.QHBoxLayout()
-        layout.addWidget(self.treeWidget)
-        layout.addWidget(QtGui.QTextEdit())
-        self.setLayout(layout)
+
+        self.loadDataIntoTreeWidget(self.data, self.rootItem)
+
+        self.label = QtGui.QLabel("")
+        self.textField = None
+
+        self.layout = QtGui.QHBoxLayout()
+        self.rightSubLayout = QtGui.QVBoxLayout()
+        self.rightSubLayout.addWidget(self.label)
+        self.layout.addWidget(self.treeWidget)
+        self.layout.addLayout(self.rightSubLayout)
+        self.setLayout(self.layout)
         self.resize(600, 400)
 
     def loadDataIntoTreeWidget(self, data, parent):
@@ -68,23 +85,33 @@ class RoxxorEditor(QtGui.QWidget):
             parent = parent.parent()
             if parent != None:
                 path.insert(0, parent.text(0))
+        path.pop(0)
         return path
 
     def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
         """
         """
-        print(self.getTreePath(item))
+        if self.isLeaf(item):
+            dataSought = self.data
+            path = self.getTreePath(item)
+            for element in path:
+                try:
+                    i = int(element)
+                    dataSought = dataSought[i]
+                except ValueError:
+                    dataSought = dataSought[element]
+            if not self.rightSubLayout.isEmpty():
+                self.rightSubLayout.removeWidget(self.textField)
+            self.label.setText(str(path[len(path)-1]))
+            self.textField = QtGui.QTextEdit()
+            self.textField.setText(str(dataSought))
+            self.rightSubLayout.addWidget(self.textField)
+
+    def isLeaf(self, item: QtGui.QTreeWidgetItem):
+        return item.childCount() == 0
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     roxxor = RoxxorEditor()
-    # roxxor.loadDataIntoTreeWidget([[1,1,1],[2],3,4,5], roxxor.rootItem)
-    roxxor.loadDataIntoTreeWidget({"roxxor": "great",
-                                   "tamaman": "good",
-                                   "list": [1,2,3],
-                                   "dic": {"mydic": "good",
-                                           "another": {"dico": [True, False, True]}
-                                          }
-                                   }, roxxor.rootItem)
     roxxor.show()
     sys.exit(app.exec_())
