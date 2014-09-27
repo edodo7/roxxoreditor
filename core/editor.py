@@ -1,15 +1,15 @@
 #!/bin/python3
 # -*- coding: utf-8 -*-
+"""
+"""
 
 import sys
 from signal import *
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-"""
-"""
 class RoxxorEditor(QtGui.QWidget):
-    """
+    """ The GUI of the editor.
     """
     def __init__(self):
         """
@@ -26,7 +26,7 @@ class RoxxorEditor(QtGui.QWidget):
         self.setLayout(layout)
         self.resize(600, 400)
 
-    def loadData(self, data, parent):
+    def loadDataIntoTreeWidget(self, data, parent):
         """
         """
         if type(data) == str or type(data) == int or type(data) == bool or type(data) == None:
@@ -35,21 +35,21 @@ class RoxxorEditor(QtGui.QWidget):
             parent.addChild(item)
         elif type(data) == list:
             for i in range(len(data)):
-                self.loadData(i, parent)
+                self.loadDataIntoTreeWidget(i, parent)
         elif type(data) == dict:
             for key in data.keys():
                 if type(data[key]) == dict:
                     newParent = QtGui.QTreeWidgetItem()
                     newParent.setText(0, str(key))
                     parent.addChild(newParent)
-                    self.loadData(data[key], newParent)
+                    self.loadDataIntoTreeWidget(data[key], newParent)
                 elif type(data[key]) == list:
                     newParent = QtGui.QTreeWidgetItem()
                     newParent.setText(0, str(key))
                     parent.addChild(newParent)
-                    self.loadData(data[key], newParent)
+                    self.loadDataIntoTreeWidget(data[key], newParent)
                 else:
-                    self.loadData(key, parent)
+                    self.loadDataIntoTreeWidget(key, parent)
         else:
             raise TypeError
 
@@ -62,5 +62,13 @@ class RoxxorEditor(QtGui.QWidget):
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     roxxor = RoxxorEditor()
+    # roxxor.loadDataIntoTreeWidget([[1,1,1],[2],3,4,5], roxxor.rootItem)
+    roxxor.loadDataIntoTreeWidget({"roxxor": "great",
+                                   "tamaman": "good",
+                                   "list": [1,2,3],
+                                   "dic": {"mydic": "good",
+                                           "another": {"dico": [True, False, True]}
+                                          }
+                                   }, roxxor.rootItem)
     roxxor.show()
     sys.exit(app.exec_())
