@@ -75,7 +75,6 @@ class RoxxorEditorWidget(QtGui.QWidget):
         self.layout.addLayout(self.subLayout)
 
         self.setLayout(self.layout)
-        self.resize(600, 400)
 
     def loadDataIntoTreeWidget(self, data, parent):
         """ Load data from a list or a dictionary into the TreeWidget.
@@ -122,7 +121,8 @@ class RoxxorEditorWidget(QtGui.QWidget):
     def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
         """ Action performed when an item in the QTreeWidget is clicked.
         """
-        self.saveValue()
+        if self.path:
+            self.saveValue()
         if self.isLeaf(item):
             dataSought = self.data
             self.path = self.getTreePath(item)
@@ -227,6 +227,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         toolBar.addAction(saveAction)
         toolBar.addAction(exitAction)
 
+        self.resize(800, 400)
         # Put the window on the center of the screen
         self.move(QtGui.QApplication.desktop().screen().rect().center()-
                   self.rect().center())
