@@ -309,6 +309,8 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             jsontools = imp.load_source('jsontools', modulePath)
 
             self.roxxorWidget.setData(jsontools.read(self.fileName))
+        else:
+            self.fileName = None
 
     def saveModifications(self):
         """ The action performed when the button "Save" un the tool bar
