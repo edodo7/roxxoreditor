@@ -40,13 +40,13 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                      self.onClickItem)
 
         # Action on tree widget
-        addKey = QtGui.QAction("Add key", self)
+        addKey = QtGui.QAction("Add value", self)
         # addKey.triggered.connect() TODO
         addList = QtGui.QAction("Add list", self)
         # addList.triggered.connect() TODO
         addDict = QtGui.QAction("Add dictionary", self)
         # addDict.triggered.connect() TODO
-        editKey = QtGui.QAction("Edit key", self)
+        editKey = QtGui.QAction("Edit", self)
         # editKey.triggered.connect() TODO
         remove = QtGui.QAction("Remove", self)
         # remove.triggered.connect() TODO
