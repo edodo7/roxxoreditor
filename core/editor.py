@@ -11,6 +11,8 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 
 KEY_LABEL_DEFAULT = "Key: "
+RESTORE_BUTTON_DEFAULT = "Restore old value"
+ADD_BUTTON_DEFAULT = "Add a key"
 
 class RoxxorEditorWidget(QtGui.QWidget):
     """ The GUI of the editor.
@@ -41,20 +43,27 @@ class RoxxorEditorWidget(QtGui.QWidget):
 
         # Text fields
         self.textField = QtGui.QTextEdit()
+        self.keyTextField = QtGui.QLineEdit()
 
         # Buttons
-        self.restoreModificationsButton = QtGui.QPushButton("Restore old value")
-        self.connect(self.restoreModificationsButton,
+        self.modificationsButton = QtGui.QPushButton(ADD_BUTTON_DEFAULT)
+        self.connect(self.modificationsButton,
                      QtCore.SIGNAL("clicked()"),
-                     self.restoreButtonClicked)
+                     self.addButtonClicked)
+
+        # Layouts
+        self.topRightSubSubSubLayout = QtGui.QHBoxLayout()
+        self.topRightSubSubSubLayout.addWidget(self.keyLabel)
+        self.topRightSubSubSubLayout.addWidget(self.keyTextField)
 
         self.leftSubSubLayout = QtGui.QHBoxLayout()
         self.leftSubSubLayout.addWidget(self.treeWidget)
+
         self.rightSubSubLayout = QtGui.QVBoxLayout()
-        self.rightSubSubLayout.addWidget(self.keyLabel)
+        self.rightSubSubLayout.addLayout(self.topRightSubSubSubLayout)
         self.rightSubSubLayout.addWidget(valueLabel)
         self.rightSubSubLayout.addWidget(self.textField)
-        self.rightSubSubLayout.addWidget(self.restoreModificationsButton)
+        self.rightSubSubLayout.addWidget(self.modificationsButton)
 
         self.subLayout = QtGui.QHBoxLayout()
         self.subLayout.addLayout(self.leftSubSubLayout)
@@ -114,6 +123,14 @@ class RoxxorEditorWidget(QtGui.QWidget):
         if self.path:
             self.saveValue()
         if self.data and self.isLeaf(item):
+            self.modificationsButton.clicked.disconnect()
+            self.modificationsButton.setText(RESTORE_BUTTON_DEFAULT)
+            self.connect(self.modificationsButton,
+                         QtCore.SIGNAL("clicked()"),
+                         self.restoreButtonClicked)
+            self.keyTextField.setText("")
+            self.keyTextField.hide()
+
             dataSought = self.data
             self.path = self.getTreePath(item)
             for element in self.path:
@@ -126,9 +143,21 @@ class RoxxorEditorWidget(QtGui.QWidget):
             self.keyLabel.setText(KEY_LABEL_DEFAULT+str(self.key))
             self.pathLabel.setText("/"+'>'.join(self.path))
             self.textField.setText(str(dataSought))
+        else:
+            # Key Label
+            self.keyLabel.setText(KEY_LABEL_DEFAULT)
+            self.keyTextField.show()
+
+            # Button
+            self.modificationsButton.clicked.disconnect()
+            self.modificationsButton.setText(ADD_BUTTON_DEFAULT)
+            self.connect(self.modificationsButton,
+                         QtCore.SIGNAL("clicked()"),
+                         self.addButtonClicked)
+            self.modificationsButton.setText(ADD_BUTTON_DEFAULT)
 
     def restoreButtonClicked(self):
-        """ Action performed when the save button is clicked.
+        """ Action performed when the restore button is clicked.
         """
         dataStruct = self.data
         for i in range(len(self.path)-1):
@@ -141,6 +170,43 @@ class RoxxorEditorWidget(QtGui.QWidget):
             self.textField.setText(str(dataStruct[int(self.key)]))
         except ValueError:
             self.textField.setText(str(dataStruct[self.key]))
+
+    def addButtonClicked(self):
+        """ Action performed when the add button is clicked
+        """
+        # Bug here!
+
+        # dataStruct = self.data
+        # for i in range(len(self.path)-1):
+        #     try:
+        #         j = int(self.path[i])
+        #         dataStruct = dataStruct[j]
+        #     except ValueError:
+        #         dataStruct = dataStruct[self.path[i]]
+        # print(dataStruct)
+        # self.key = self.keyTextField.text()
+        # data = self.textField.toPlainText()
+        # print(self.key)
+        # print(data)
+        # if self.key != "":
+        #     if type(dataStruct) == list:
+        #         try:
+        #             i = int(self.key)
+        #             dataStruct[i] = data
+        #         except ValueError:
+        #             print("The index must be an integer!") # TODO popup
+        #     elif type(dataStruct) == dict:
+        #         dataStruct[self.key] = data
+
+        #     for i in range(self.rootItem.childCount()):
+        #         self.rootItem.removeChild(self.rootItem.child(i))
+
+        #     self.loadDataIntoTreeWidget(self.data, self.rootItem)
+        #     self.treeWidget.sortItems(0,0)
+        #     self.saveValue()
+        # else:
+        #     print("A key can't be empty!") # TODO popup
+        pass
         
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
