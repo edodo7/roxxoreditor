@@ -83,11 +83,11 @@ class RoxxorEditorWidget(QtGui.QWidget):
         splitter.addWidget(leftFrame)
         splitter.addWidget(rightFrame)
 
-        self.layout = QtGui.QVBoxLayout()
-        self.layout.addWidget(self.pathLabel)
-        self.layout.addWidget(splitter)
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(self.pathLabel)
+        layout.addWidget(splitter)
 
-        self.setLayout(self.layout)
+        self.setLayout(layout)
 
     def loadDataIntoTreeWidget(self, data, parent, force_explore=None):
         """ Load data from a list or a dictionary into the TreeWidget.
