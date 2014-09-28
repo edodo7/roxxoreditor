@@ -300,14 +300,15 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """
         self.fileName = QtGui.QFileDialog.getOpenFileName(self, 'Open a file',
                         str(os.path.expanduser("~")))
-        # TODO
-        modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                  '..',
-                                                  'modules',
-                                                  'jsontools.py')
-        jsontools = imp.load_source('jsontools', modulePath)
+        if self.fileName != "":
+            # TODO
+            modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                      '..',
+                                                      'modules',
+                                                      'jsontools.py')
+            jsontools = imp.load_source('jsontools', modulePath)
 
-        self.roxxorWidget.setData(jsontools.read(self.fileName))
+            self.roxxorWidget.setData(jsontools.read(self.fileName))
 
     def saveModifications(self):
         """ The action performed when the button "Save" un the tool bar
