@@ -302,13 +302,14 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
 
-        # Tool bar
-        toolBar = self.addToolBar('Open')
-        toolBar.setMovable(False)
+        # Menu Bar
+        menubar = self.menuBar()
 
-        toolBar.addAction(openAction)
-        toolBar.addAction(saveAction)
-        toolBar.addAction(exitAction)
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(openAction)
+        fileMenu.addAction(saveAction)
+        fileMenu.addSeparator()
+        fileMenu.addAction(exitAction)
 
         self.resize(800, 400)
         # Put the window on the center of the screen
