@@ -96,35 +96,34 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def contextMenu(self, qPoint):
         """ Definition of the contextual menu of the tree view.
         """
+        addKey = QtGui.QAction("Add value", self)
+        # addKey.triggered.connect() TODO
+        addElement = QtGui.QAction("Add element", self)
+        # addElement.triggered.connect() TODO
+        addList = QtGui.QAction("Add list", self)
+        # addList.triggered.connect() TODO
+        addDict = QtGui.QAction("Add dictionary", self)
+        # addDict.triggered.connect() TODO
+        editKey = QtGui.QAction("Edit", self)
+        # editKey.triggered.connect() TODO
+        remove = QtGui.QAction("Remove", self)
+        # remove.triggered.connect() TODO
+        menu = QtGui.QMenu(self)
         treeItem = self.treeWidget.selectedItems()[0]
         if treeItem.text(0) != "root":
             if self.isLeaf(treeItem):
-                editKey = QtGui.QAction("Edit", self)
-                # editKey.triggered.connect() TODO
-                remove = QtGui.QAction("Remove", self)
-                # remove.triggered.connect() TODO
-                menu = QtGui.QMenu(self)
                 menu.addAction(editKey)
                 menu.addAction(remove)
-                menu.exec_(QtGui.QCursor.pos())
-
             else:
-                addKey = QtGui.QAction("Add value", self)
-                # addKey.triggered.connect() TODO
-                addList = QtGui.QAction("Add list", self)
-                # addList.triggered.connect() TODO
-                addDict = QtGui.QAction("Add dictionary", self)
-                # addDict.triggered.connect() TODO
-                editKey = QtGui.QAction("Edit", self)
-                # editKey.triggered.connect() TODO
-                remove = QtGui.QAction("Remove", self)
-                # remove.triggered.connect() TODO
-                menu = QtGui.QMenu(self)
-                menu.addAction(addKey)
-                menu.addAction(addList)
-                menu.addAction(addDict)
-                menu.addAction(editKey)
-                menu.addAction(remove)
+                if treeItem.text(0).split()[1] == "[]":
+                    menu.addAction(addElement)
+                    menu.addAction(addList)
+                    menu.addAction(addDict)
+                    menu.addAction(remove)
+                elif treeItem.text(0).split()[1] == "{}":
+                    menu.addAction(addKey)
+                    menu.addAction(editKey)
+
             menu.exec_(QtGui.QCursor.pos())
 
     def loadDataIntoTreeWidget(self, data, parent, force_explore=None):
