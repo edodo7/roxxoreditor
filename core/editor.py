@@ -247,8 +247,14 @@ class RoxxorEditorWidget(QtGui.QWidget):
         """ Set the instance variable self.data and refresh the tree view.
         """
         self.data = data
-        for i in range(self.rootItem.childCount()):
-            self.rootItem.removeChild(self.rootItem.child(i))
+        self.key = None
+        self.path = []
+        # "Destroy" old root and create a new one
+        self.treeWidget.takeTopLevelItem(0)
+        self.rootItem = QtGui.QTreeWidgetItem()
+        self.rootItem.setData(0, 0, "root")
+        self.treeWidget.insertTopLevelItem(0, self.rootItem)
+        # Load data into the tree and sort it
         self.loadDataIntoTreeWidget(self.data, self.rootItem)
         self.treeWidget.sortItems(0,0)
 
