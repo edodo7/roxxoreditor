@@ -11,7 +11,6 @@ def registerModule(modulesDict):
 
 KEY_LABEL_DEFAULT = "Key: "
 RESTORE_BUTTON_DEFAULT = "Restore original value"
-ADD_BUTTON_DEFAULT = "Add a key"
 
 class RoxxorEditorJSON(RoxxorEditorWidget):
     """ The GUI of the editor for JSON.
@@ -28,6 +27,8 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         self.path = []
 
         QtGui.QWidget.__init__(self)
+
+        # Tree widget
         self.treeWidget = QtGui.QTreeWidget()
         self.treeWidget.setHeaderHidden(True)
         self.treeWidget.setAlternatingRowColors(True)
@@ -38,32 +39,48 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                      QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                      self.onClickItem)
 
+        # Action on tree widget
+        addKey = QtGui.QAction("Add key", self)
+        # addKey.triggered.connect() TODO
+        addList = QtGui.QAction("Add list", self)
+        # addList.triggered.connect() TODO
+        addDict = QtGui.QAction("Add dictionary", self)
+        # addDict.triggered.connect() TODO
+        editKey = QtGui.QAction("Edit key", self)
+        # editKey.triggered.connect() TODO
+        remove = QtGui.QAction("Remove", self)
+        # remove.triggered.connect() TODO
+
+        self.treeWidget.addAction(addKey)
+        self.treeWidget.addAction(addList)
+        self.treeWidget.addAction(addDict)
+        self.treeWidget.addAction(editKey)
+        self.treeWidget.addAction(remove)
+        self.treeWidget.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+
         # Labels
         self.pathLabel = QtGui.QLabel("/")
         self.pathLabel.setSizePolicy(QtGui.QSizePolicy.Minimum,
                                      QtGui.QSizePolicy.Maximum)
         self.keyLabel = QtGui.QLabel(KEY_LABEL_DEFAULT)
+        self.keyLabel.hide()
         self.valueLabel = QtGui.QLabel("Value:")
         self.valueLabel.hide()
 
         # Text fields
         self.textField = QtGui.QTextEdit()
         self.textField.hide()
-        self.keyTextField = QtGui.QLineEdit()
-        self.connect(self.keyTextField,
-                     QtCore.SIGNAL("returnPressed()"),
-                     self.keyEntered)
 
         # Buttons
-        self.modificationsButton = QtGui.QPushButton(ADD_BUTTON_DEFAULT)
+        self.modificationsButton = QtGui.QPushButton(RESTORE_BUTTON_DEFAULT)
         self.connect(self.modificationsButton,
                      QtCore.SIGNAL("clicked()"),
-                     self.addButtonClicked)
+                     self.restoreButtonClicked)
+        self.modificationsButton.hide()
 
         # Layouts
         topRightSubSubSubLayout = QtGui.QHBoxLayout()
         topRightSubSubSubLayout.addWidget(self.keyLabel)
-        topRightSubSubSubLayout.addWidget(self.keyTextField)
 
         leftSubSubLayout = QtGui.QHBoxLayout()
         leftSubSubLayout.addWidget(self.treeWidget)
@@ -142,14 +159,6 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         if self.path and self.key != None:
             self.saveValue()
         if self.data and self.isLeaf(item):
-            self.modificationsButton.clicked.disconnect()
-            self.modificationsButton.setText(RESTORE_BUTTON_DEFAULT)
-            self.connect(self.modificationsButton,
-                         QtCore.SIGNAL("clicked()"),
-                         self.restoreButtonClicked)
-            self.keyTextField.setText("")
-            self.keyTextField.hide()
-
             dataSought = self.data
             self.path = self.getTreePath(item)
             for element in self.path:
@@ -162,26 +171,24 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             self.keyLabel.setText(KEY_LABEL_DEFAULT+str(self.key))
             self.pathLabel.setText("/"+'>'.join(self.path))
             self.textField.setText(str(dataSought))
+            self.keyLabel.show()
             self.valueLabel.show()
             self.textField.show()
+            self.modificationsButton.show()
         else:
             # Key Label
             self.keyLabel.setText(KEY_LABEL_DEFAULT)
-            self.keyTextField.show()
 
             # Update path
             self.path = self.getTreePath(item)
             self.pathLabel.setText("/"+'>'.join(self.path))
 
-            # Button
-            self.modificationsButton.clicked.disconnect()
-            self.modificationsButton.setText(ADD_BUTTON_DEFAULT)
-            self.connect(self.modificationsButton,
-                         QtCore.SIGNAL("clicked()"),
-                         self.addButtonClicked)
-            self.modificationsButton.setText(ADD_BUTTON_DEFAULT)
+            self.keyLabel.hide()
             self.valueLabel.hide()
             self.textField.hide()
+            self.modificationsButton.hide()
+
+            self.key = None
 
     def restoreButtonClicked(self):
         """ Action performed when the restore button is clicked.
@@ -198,40 +205,34 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         except ValueError:
             self.textField.setText(str(dataStruct[self.key]))
 
-    def addButtonClicked(self):
-        """ Action performed when the add button is clicked
-        """
-        dataStruct = self.data
-        for i in range(len(self.path)-1):
-            try:
-                j = int(self.path[i])
-                dataStruct = dataStruct[j]
-            except ValueError:
-                dataStruct = dataStruct[self.path[i]]
-        self.key = self.keyTextField.text()
-        data = self.textField.toPlainText()
-        if self.key != "":
-            if type(dataStruct) == list:
-                try:
-                    i = int(self.key)
-                    dataStruct[i] = data
-                except ValueError:
-                    errorDialog("The index must be an integer!")
-            elif type(dataStruct) == dict:
-                dataStruct[self.key] = data
+    # def addButtonClicked(self):
+    #     """ Action performed when the add button is clicked
+    #     """
+    #     dataStruct = self.data
+    #     for i in range(len(self.path)-1):
+    #         try:
+    #             j = int(self.path[i])
+    #             dataStruct = dataStruct[j]
+    #         except ValueError:
+    #             dataStruct = dataStruct[self.path[i]]
+    #     self.key = self.keyTextField.text()
+    #     data = self.textField.toPlainText()
+    #     if self.key != "":
+    #         if type(dataStruct) == list:
+    #             try:
+    #                 i = int(self.key)
+    #                 dataStruct[i] = data
+    #             except ValueError:
+    #                 errorDialog("The index must be an integer!")
+    #         elif type(dataStruct) == dict:
+    #             dataStruct[self.key] = data
 
-            for i in range(self.rootItem.childCount()):
-                self.rootItem.removeChild(self.rootItem.child(i))
+    #         for i in range(self.rootItem.childCount()):
+    #             self.rootItem.removeChild(self.rootItem.child(i))
 
-            self.setData(self.data)
-        else:
-            errorDialog("A key can't be empty!")
-
-    def keyEntered(self):
-        """
-        """
-        self.textField.setText("")
-        self.textField.show()
+    #         self.setData(self.data)
+    #     else:
+    #         errorDialog("A key can't be empty!")
 
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
