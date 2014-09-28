@@ -50,7 +50,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         saveAction = QtGui.QAction('Save', self)
         saveAction.setShortcut('Ctrl+S')
         saveAction.setStatusTip('Save the modifications')
-        saveAction.triggered.connect(self.saveModifications)
+        saveAction.triggered.connect(self.saveFile)
 
         exitAction = QtGui.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
@@ -89,7 +89,8 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             # Actualize widget following the extension of the file to use
             ext = os.path.splitext(self.fileName)[1]
             if ext != self.activeWidget:
-                self.roxxorWidget = modulesDict[ext]()
+                self.activeWidget = ext
+                self.roxxorWidget = modulesDict[self.activeWidget]()
                 self.setCentralWidget(self.roxxorWidget)
 
             # Read and Set datas
@@ -97,7 +98,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         else:
             self.fileName = None
 
-    def saveModifications(self):
+    def saveFile(self):
         """ The action performed when the button "Save" un the tool bar
             is clicked.
         """
