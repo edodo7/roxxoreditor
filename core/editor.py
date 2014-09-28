@@ -39,11 +39,16 @@ class RoxxorEditorWidget(QtGui.QWidget):
         # Labels
         self.pathLabel = QtGui.QLabel("/")
         self.keyLabel = QtGui.QLabel(KEY_LABEL_DEFAULT)
-        valueLabel = QtGui.QLabel("Value:")
+        self.valueLabel = QtGui.QLabel("Value:")
+        self.valueLabel.hide()
 
         # Text fields
         self.textField = QtGui.QTextEdit()
+        self.textField.hide()
         self.keyTextField = QtGui.QLineEdit()
+        self.connect(self.keyTextField,
+                     QtCore.SIGNAL("returnPressed()"),
+                     self.keyEntered)
 
         # Buttons
         self.modificationsButton = QtGui.QPushButton(ADD_BUTTON_DEFAULT)
@@ -61,7 +66,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
 
         self.rightSubSubLayout = QtGui.QVBoxLayout()
         self.rightSubSubLayout.addLayout(self.topRightSubSubSubLayout)
-        self.rightSubSubLayout.addWidget(valueLabel)
+        self.rightSubSubLayout.addWidget(self.valueLabel)
         self.rightSubSubLayout.addWidget(self.textField)
         self.rightSubSubLayout.addWidget(self.modificationsButton)
 
@@ -148,6 +153,8 @@ class RoxxorEditorWidget(QtGui.QWidget):
             self.keyLabel.setText(KEY_LABEL_DEFAULT+str(self.key))
             self.pathLabel.setText("/"+'>'.join(self.path))
             self.textField.setText(str(dataSought))
+            self.valueLabel.show()
+            self.textField.show()
         else:
             # Key Label
             self.keyLabel.setText(KEY_LABEL_DEFAULT)
@@ -160,6 +167,8 @@ class RoxxorEditorWidget(QtGui.QWidget):
                          QtCore.SIGNAL("clicked()"),
                          self.addButtonClicked)
             self.modificationsButton.setText(ADD_BUTTON_DEFAULT)
+            self.valueLabel.hide()
+            self.textField.hide()
 
     def restoreButtonClicked(self):
         """ Action performed when the restore button is clicked.
@@ -205,6 +214,11 @@ class RoxxorEditorWidget(QtGui.QWidget):
         else:
             print("A key can't be empty!") # TODO popup
 
+    def keyEntered(self):
+        """
+        """
+        self.textField.setText("")
+        self.textField.show()
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
