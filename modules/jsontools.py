@@ -228,6 +228,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """
         self.textField.setText("")
         self.textField.show()
+
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
@@ -299,3 +300,5 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
         with open(filename, 'w') as foutput:
             foutput.writelines(str_dump)
+
+        self.originalData = copy.deepcopy(self.data)
