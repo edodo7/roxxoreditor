@@ -179,8 +179,6 @@ class RoxxorEditorWidget(QtGui.QWidget):
     def addButtonClicked(self):
         """ Action performed when the add button is clicked
         """
-        # Bug here!
-
         dataStruct = self.data
         for i in range(len(self.path)-1):
             try:
