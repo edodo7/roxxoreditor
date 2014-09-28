@@ -75,16 +75,21 @@ class RoxxorEditorWidget(QtGui.QWidget):
 
         self.setLayout(self.layout)
 
-    def loadDataIntoTreeWidget(self, data, parent):
+    def loadDataIntoTreeWidget(self, data, parent, force_explore=None):
         """ Load data from a list or a dictionary into the TreeWidget.
         """
         if type(data) == str or type(data) == int or type(data) == bool or data == None:
             item = QtGui.QTreeWidgetItem()
             item.setText(0, str(data))
             parent.addChild(item)
+            if force_explore:
+                self.loadDataIntoTreeWidget(force_explore[data], item)
         elif type(data) == list:
             for i in range(len(data)):
-                self.loadDataIntoTreeWidget(i, parent)
+                if type(data[i]) == dict or type(data[i]) == list:
+                    self.loadDataIntoTreeWidget(i, parent, data)
+                else:
+                    self.loadDataIntoTreeWidget(i, parent)
         elif type(data) == dict:
             for key in data.keys():
                 if type(data[key]) == dict:
@@ -207,7 +212,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
         # else:
         #     print("A key can't be empty!") # TODO popup
         pass
-        
+
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
@@ -269,7 +274,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         saveAction.setShortcut('Ctrl+S')
         saveAction.setStatusTip('Save the modifications')
         saveAction.triggered.connect(self.saveModifications)
-        
+
         exitAction = QtGui.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
@@ -315,7 +320,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         jsontools = imp.load_source('jsontools', modulePath)
 
         jsontools.write(self.fileName, self.roxxorWidget.data)
-        
+
 def main():
     app = QtGui.QApplication(sys.argv)
     roxxor = RoxxorEditorWindow()
@@ -323,4 +328,4 @@ def main():
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
-    main()    
+    main()
