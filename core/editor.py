@@ -181,37 +181,31 @@ class RoxxorEditorWidget(QtGui.QWidget):
         """
         # Bug here!
 
-        # dataStruct = self.data
-        # for i in range(len(self.path)-1):
-        #     try:
-        #         j = int(self.path[i])
-        #         dataStruct = dataStruct[j]
-        #     except ValueError:
-        #         dataStruct = dataStruct[self.path[i]]
-        # print(dataStruct)
-        # self.key = self.keyTextField.text()
-        # data = self.textField.toPlainText()
-        # print(self.key)
-        # print(data)
-        # if self.key != "":
-        #     if type(dataStruct) == list:
-        #         try:
-        #             i = int(self.key)
-        #             dataStruct[i] = data
-        #         except ValueError:
-        #             print("The index must be an integer!") # TODO popup
-        #     elif type(dataStruct) == dict:
-        #         dataStruct[self.key] = data
+        dataStruct = self.data
+        for i in range(len(self.path)-1):
+            try:
+                j = int(self.path[i])
+                dataStruct = dataStruct[j]
+            except ValueError:
+                dataStruct = dataStruct[self.path[i]]
+        self.key = self.keyTextField.text()
+        data = self.textField.toPlainText()
+        if self.key != "":
+            if type(dataStruct) == list:
+                try:
+                    i = int(self.key)
+                    dataStruct[i] = data
+                except ValueError:
+                    print("The index must be an integer!") # TODO popup
+            elif type(dataStruct) == dict:
+                dataStruct[self.key] = data
 
-        #     for i in range(self.rootItem.childCount()):
-        #         self.rootItem.removeChild(self.rootItem.child(i))
+            for i in range(self.rootItem.childCount()):
+                self.rootItem.removeChild(self.rootItem.child(i))
 
-        #     self.loadDataIntoTreeWidget(self.data, self.rootItem)
-        #     self.treeWidget.sortItems(0,0)
-        #     self.saveValue()
-        # else:
-        #     print("A key can't be empty!") # TODO popup
-        pass
+            self.setData(self.data)
+        else:
+            print("A key can't be empty!") # TODO popup
 
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
@@ -259,7 +253,6 @@ class RoxxorEditorWidget(QtGui.QWidget):
         self.loadDataIntoTreeWidget(self.data, self.rootItem)
         self.treeWidget.sortItems(0,0)
         self.rootItem.setExpanded(True)
-
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
     """ The main window of the editor.
