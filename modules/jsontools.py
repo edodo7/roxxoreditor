@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import copy
 from roxxoreditorwidget import *
 
 def registerModule(modulesDict):
@@ -18,6 +19,9 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def __init__(self):
         """ Initialization of the object.
         """
+        # This variable is the backup of the data
+        self.originalData = {}
+        # This variable is the data user work with
         self.data = {}
 
         self.key = None
@@ -178,7 +182,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def restoreButtonClicked(self):
         """ Action performed when the restore button is clicked.
         """
-        dataStruct = self.data
+        dataStruct = self.originalData
         for i in range(len(self.path)-1):
             try:
                 j = int(self.path[i])
@@ -257,7 +261,8 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def setData(self, filename):
         """ Set the instance variable self.data and refresh the tree view.
         """
-        self.data = self.read(filename)
+        self.originalData = self.read(filename)
+        self.data = copy.deepcopy(self.originalData)
         self.key = None
         self.path = []
         self.pathLabel.setText("/")
