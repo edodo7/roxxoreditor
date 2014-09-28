@@ -39,24 +39,11 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                      QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                      self.onClickItem)
 
-        # Action on tree widget
-        addKey = QtGui.QAction("Add value", self)
-        # addKey.triggered.connect() TODO
-        addList = QtGui.QAction("Add list", self)
-        # addList.triggered.connect() TODO
-        addDict = QtGui.QAction("Add dictionary", self)
-        # addDict.triggered.connect() TODO
-        editKey = QtGui.QAction("Edit", self)
-        # editKey.triggered.connect() TODO
-        remove = QtGui.QAction("Remove", self)
-        # remove.triggered.connect() TODO
+        self.treeWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
 
-        self.treeWidget.addAction(addKey)
-        self.treeWidget.addAction(addList)
-        self.treeWidget.addAction(addDict)
-        self.treeWidget.addAction(editKey)
-        self.treeWidget.addAction(remove)
-        self.treeWidget.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.connect(self.treeWidget,
+                     QtCore.SIGNAL('customContextMenuRequested(QPoint)'),
+                     self.contextMenu)
 
         # Labels
         self.pathLabel = QtGui.QLabel("/")
@@ -105,6 +92,38 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         layout.addWidget(splitter)
 
         self.setLayout(layout)
+
+    def contextMenu(self, qPoint):
+        """ Definition of the contextual menu of the tree view.
+        """
+        if self.isLeaf(self.treeWidget.selectedItems()[0]):
+            editKey = QtGui.QAction("Edit", self)
+            # editKey.triggered.connect() TODO
+            remove = QtGui.QAction("Remove", self)
+            # remove.triggered.connect() TODO
+            menu = QtGui.QMenu(self)
+            menu.addAction(editKey)
+            menu.addAction(remove)
+            menu.exec_(QtGui.QCursor.pos())
+
+        else:
+            addKey = QtGui.QAction("Add value", self)
+            # addKey.triggered.connect() TODO
+            addList = QtGui.QAction("Add list", self)
+            # addList.triggered.connect() TODO
+            addDict = QtGui.QAction("Add dictionary", self)
+            # addDict.triggered.connect() TODO
+            editKey = QtGui.QAction("Edit", self)
+            # editKey.triggered.connect() TODO
+            remove = QtGui.QAction("Remove", self)
+            # remove.triggered.connect() TODO
+            menu = QtGui.QMenu(self)
+            menu.addAction(addKey)
+            menu.addAction(addList)
+            menu.addAction(addDict)
+            menu.addAction(editKey)
+            menu.addAction(remove)
+            menu.exec_(QtGui.QCursor.pos())
 
     def loadDataIntoTreeWidget(self, data, parent, force_explore=None):
         """ Load data from a list or a dictionary into the TreeWidget.
