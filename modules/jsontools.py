@@ -139,7 +139,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
         """ Action performed when an item in the QTreeWidget is clicked.
         """
-        if self.path:
+        if self.path and self.key != None:
             self.saveValue()
         if self.data and self.isLeaf(item):
             self.modificationsButton.clicked.disconnect()
@@ -168,6 +168,10 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             # Key Label
             self.keyLabel.setText(KEY_LABEL_DEFAULT)
             self.keyTextField.show()
+
+            # Update path
+            self.path = self.getTreePath(item)
+            self.pathLabel.setText("/"+'>'.join(self.path))
 
             # Button
             self.modificationsButton.clicked.disconnect()
