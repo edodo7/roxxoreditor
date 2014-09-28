@@ -316,14 +316,19 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """ The action performed when the button "Save" un the tool bar
             is clicked.
         """
-        # TODO
-        modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                  '..',
-                                                  'modules',
-                                                  'jsontools.py')
-        jsontools = imp.load_source('jsontools', modulePath)
-
-        jsontools.write(self.fileName, self.roxxorWidget.data)
+        if self.fileName == None:
+            self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file")
+        
+        if self.fileName != "":
+            # TODO
+            modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                      '..',
+                                                      'modules',
+                                                      'jsontools.py')
+            jsontools = imp.load_source('jsontools', modulePath)
+            jsontools.write(self.fileName, self.roxxorWidget.data)
+        else:
+            self.fileName = None
 
 def main():
     app = QtGui.QApplication(sys.argv)
