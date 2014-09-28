@@ -9,7 +9,7 @@ def registerModule(modulesDict):
 
 
 KEY_LABEL_DEFAULT = "Key: "
-RESTORE_BUTTON_DEFAULT = "Restore old value"
+RESTORE_BUTTON_DEFAULT = "Restore original value"
 ADD_BUTTON_DEFAULT = "Add a key"
 
 class RoxxorEditorJSON(RoxxorEditorWidget):
