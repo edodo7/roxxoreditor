@@ -38,6 +38,8 @@ class RoxxorEditorWidget(QtGui.QWidget):
 
         # Labels
         self.pathLabel = QtGui.QLabel("/")
+        self.pathLabel.setSizePolicy(QtGui.QSizePolicy.Minimum,
+                                     QtGui.QSizePolicy.Maximum)
         self.keyLabel = QtGui.QLabel(KEY_LABEL_DEFAULT)
         self.valueLabel = QtGui.QLabel("Value:")
         self.valueLabel.hide()
@@ -57,26 +59,31 @@ class RoxxorEditorWidget(QtGui.QWidget):
                      self.addButtonClicked)
 
         # Layouts
-        self.topRightSubSubSubLayout = QtGui.QHBoxLayout()
-        self.topRightSubSubSubLayout.addWidget(self.keyLabel)
-        self.topRightSubSubSubLayout.addWidget(self.keyTextField)
+        topRightSubSubSubLayout = QtGui.QHBoxLayout()
+        topRightSubSubSubLayout.addWidget(self.keyLabel)
+        topRightSubSubSubLayout.addWidget(self.keyTextField)
 
-        self.leftSubSubLayout = QtGui.QHBoxLayout()
-        self.leftSubSubLayout.addWidget(self.treeWidget)
+        leftSubSubLayout = QtGui.QHBoxLayout()
+        leftSubSubLayout.addWidget(self.treeWidget)
 
-        self.rightSubSubLayout = QtGui.QVBoxLayout()
-        self.rightSubSubLayout.addLayout(self.topRightSubSubSubLayout)
-        self.rightSubSubLayout.addWidget(self.valueLabel)
-        self.rightSubSubLayout.addWidget(self.textField)
-        self.rightSubSubLayout.addWidget(self.modificationsButton)
+        rightSubSubLayout = QtGui.QVBoxLayout()
+        rightSubSubLayout.addLayout(topRightSubSubSubLayout)
+        rightSubSubLayout.addWidget(self.valueLabel)
+        rightSubSubLayout.addWidget(self.textField)
+        rightSubSubLayout.addWidget(self.modificationsButton)
 
-        self.subLayout = QtGui.QHBoxLayout()
-        self.subLayout.addLayout(self.leftSubSubLayout)
-        self.subLayout.addLayout(self.rightSubSubLayout)
+        leftFrame = QtGui.QFrame()
+        leftFrame.setLayout(leftSubSubLayout)
+        rightFrame = QtGui.QFrame()
+        rightFrame.setLayout(rightSubSubLayout)
+
+        splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)
+        splitter.addWidget(leftFrame)
+        splitter.addWidget(rightFrame)
 
         self.layout = QtGui.QVBoxLayout()
         self.layout.addWidget(self.pathLabel)
-        self.layout.addLayout(self.subLayout)
+        self.layout.addWidget(splitter)
 
         self.setLayout(self.layout)
 
@@ -332,7 +339,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """
         if self.fileName == None:
             self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file")
-        
+
         if self.fileName != "":
             # TODO
             modulePath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
