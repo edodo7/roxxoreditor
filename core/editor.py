@@ -52,6 +52,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         saveAction.setStatusTip('Save the modifications')
         saveAction.triggered.connect(self.saveFile)
 
+        saveAsAction = QtGui.QAction('Save As...', self)
+        saveAsAction.setShortcut('Ctrl+Shift+S')
+        saveAsAction.setStatusTip('Save the modifications')
+        saveAsAction.triggered.connect(self.saveAsFile)
+
         exitAction = QtGui.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
@@ -68,6 +73,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(openAction)
         fileMenu.addAction(saveAction)
+        fileMenu.addAction(saveAsAction)
         fileMenu.addSeparator()
         fileMenu.addAction(exitAction)
 
@@ -104,6 +110,17 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """
         if self.fileName == None:
             self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file")
+
+        if self.fileName != "":
+            self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
+        else:
+            self.fileName = None
+
+    def saveAsFile(self):
+        """ The action performed when the button "Save" un the tool bar
+            is clicked.
+        """
+        self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file as...")
 
         if self.fileName != "":
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
