@@ -10,6 +10,8 @@ from signal import *
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+from dialog import aboutDialog, errorDialog
+
 KEY_LABEL_DEFAULT = "Key: "
 RESTORE_BUTTON_DEFAULT = "Restore old value"
 ADD_BUTTON_DEFAULT = "Add a key"
@@ -210,7 +212,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
                     i = int(self.key)
                     dataStruct[i] = data
                 except ValueError:
-                    print("The index must be an integer!") # TODO popup
+                    errorDialog("The index must be an integer!")
             elif type(dataStruct) == dict:
                 dataStruct[self.key] = data
 
@@ -219,7 +221,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
 
             self.setData(self.data)
         else:
-            print("A key can't be empty!") # TODO popup
+            errorDialog("A key can't be empty!")
 
     def keyEntered(self):
         """
@@ -248,7 +250,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
                 self.textField.setText(str(dataStruct[int(self.key)]))
             except ValueError:
                 self.textField.setText(str(dataStruct[self.key]))
-            print("Wrong entry") # TODO popup
+            errorDialog("Wrong entry!")
 
     def isLeaf(self, item: QtGui.QTreeWidgetItem):
         """ Return True if the item is a leaf of the QTreeWidget else
@@ -302,6 +304,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
 
+        aboutAction = QtGui.QAction('About', self)
+        aboutAction.setShortcut('F1')
+        aboutAction.setStatusTip('Application informations')
+        aboutAction.triggered.connect(aboutDialog)
+
         # Menu Bar
         menubar = self.menuBar()
 
@@ -310,6 +317,9 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         fileMenu.addAction(saveAction)
         fileMenu.addSeparator()
         fileMenu.addAction(exitAction)
+
+        fileMenu = menubar.addMenu('&Help')
+        fileMenu.addAction(aboutAction)
 
         self.resize(800, 400)
         # Put the window on the center of the screen
