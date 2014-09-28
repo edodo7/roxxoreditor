@@ -249,6 +249,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
         self.data = data
         self.key = None
         self.path = []
+        self.pathLabel.setText("/")
         # "Destroy" old root and create a new one
         self.treeWidget.takeTopLevelItem(0)
         self.rootItem = QtGui.QTreeWidgetItem()
@@ -257,6 +258,7 @@ class RoxxorEditorWidget(QtGui.QWidget):
         # Load data into the tree and sort it
         self.loadDataIntoTreeWidget(self.data, self.rootItem)
         self.treeWidget.sortItems(0,0)
+        self.rootItem.setExpanded(True)
 
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
