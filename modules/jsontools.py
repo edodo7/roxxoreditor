@@ -97,6 +97,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
         """ Action performed when an item in the QTreeWidget is clicked.
         """
+        print(self.path)
         if self.path and self.key != None:
             self.saveValue()
         if self.data and self.treeWidget.isLeaf(item) and len(item.text(0).split()) == 1:
@@ -206,6 +207,25 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
         self.originalData = copy.deepcopy(self.data)
 
+class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
+    """ A tree widget item specialised for displaying JSON data.
+    """
+    def __init__(self, data, dataType=None):
+        """
+        """
+        QtGui.QTreeWidgetItem.__init__(self)
+        self.data = data
+        self.dataType = dataType
+        self.setText()
+
+    def setText(self):
+        s = str(self.data)
+        if self.dataType == list:
+            s += " []"
+        elif self.dataType == dict:
+            s += " {}"
+        QtGui.QTreeWidgetItem.setText(self, 0, s)
+
 class TreeWidgetJSON(QtGui.QTreeWidget):
     """ A tree widget specialised for displaying a JSON.
     """
@@ -218,8 +238,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         # Roxxor editor JSON widget
         self.roxxorEditorJSON = roxxorEditorJSONwidget
         # Root item
-        self.rootItem = QtGui.QTreeWidgetItem()
-        self.rootItem.setData(0, 0, "root")
+        self.rootItem = TreeWidgetItemJSON("root")
         self.insertTopLevelItem(0, self.rootItem)
         # Manage custom context menu
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -232,27 +251,28 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         """ Load data from a list or a dictionary into the TreeWidget.
         """
         if type(data) == str or type(data) == int or type(data) == bool or data == None:
-            item = QtGui.QTreeWidgetItem()
-            item.setText(0, str(data))
+            item = TreeWidgetItemJSON(data)
             parent.addChild(item)
             if force_explore:
                 self.loadData(force_explore[data], item)
         elif type(data) == list:
+            parent.dataType = list
+            parent.setText()
             for i in range(len(data)):
                 if type(data[i]) == dict or type(data[i]) == list:
                     self.loadData(i, parent, data)
                 else:
                     self.loadData(i, parent)
         elif type(data) == dict:
+            parent.dataType = dict
+            parent.setText()
             for key in data.keys():
                 if type(data[key]) == dict:
-                    newParent = QtGui.QTreeWidgetItem()
-                    newParent.setText(0, str(key)+" {}")
+                    newParent = TreeWidgetItemJSON(key, dict)
                     parent.addChild(newParent)
                     self.loadData(data[key], newParent)
                 elif type(data[key]) == list:
-                    newParent = QtGui.QTreeWidgetItem()
-                    newParent.setText(0, str(key)+" []")
+                    newParent = TreeWidgetItemJSON(key, list)
                     parent.addChild(newParent)
                     self.loadData(data[key], newParent)
                 else:
@@ -265,8 +285,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         """
         # "Destroy" old root and create a new one
         self.takeTopLevelItem(0)
-        self.rootItem = QtGui.QTreeWidgetItem()
-        self.rootItem.setData(0, 0, "root")
+        self.rootItem = TreeWidgetItemJSON("root")
         self.insertTopLevelItem(0, self.rootItem)
         # Load data into the tree and sort it
         self.loadData(data, self.rootItem)
@@ -277,14 +296,14 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         """ Return the list of ancestors of the item passed in parameters
             (itself included) sorted in ascending order.
         """
-        path = [item.text(0)]
+        path = [str(item.data)]
         parent = item.parent()
         if parent != None:
-            path.insert(0, parent.text(0).split()[0])
+            path.insert(0, str(parent.data))
         while parent != None:
             parent = parent.parent()
             if parent != None:
-                path.insert(0, parent.text(0).split()[0])
+                path.insert(0, str(parent.data))
         path.pop(0)
         return path
 
