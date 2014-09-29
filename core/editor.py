@@ -3,13 +3,13 @@
 """ This script contains the core of the Roxxor Editor.
 """
 
+import imp
 import sys
 import os.path
-import imp
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from dialog import aboutDialog
+from dialog import aboutDialog, modulesDialog
 
 # Dynamic import of modules
 modulesDict = {}
@@ -39,7 +39,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.roxxorWidget = modulesDict[self.activeWidget]()
         self.setCentralWidget(self.roxxorWidget)
 
-        self.fileName = None
+        self.fileName = ""
 
         # Actions
         openAction = QtGui.QAction('Open', self)
@@ -85,6 +85,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.move(QtGui.QApplication.desktop().screen().rect().center()-
                   self.rect().center())
 
+
     def openFile(self):
         """ The action performed when the button "Open" in the tool bar
             is clicked.
@@ -94,6 +95,13 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         if self.fileName != "":
             # Actualize widget following the extension of the file to use
             ext = os.path.splitext(self.fileName)[1]
+            modulesList = list(modulesDict.keys())
+
+            if ext not in modulesList:
+                ext, proceed = modulesDialog(modulesList)
+                if not proceed:  # In case of a cancel
+                    return
+
             if ext != self.activeWidget:
                 self.activeWidget = ext
                 self.roxxorWidget = modulesDict[self.activeWidget]()
@@ -101,31 +109,28 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
 
             # Read and Set datas
             self.roxxorWidget.setData(self.fileName)
-        else:
-            self.fileName = None
+
 
     def saveFile(self):
-        """ The action performed when the button "Save" un the tool bar
+        """ The action performed when the button "Save" in the menubar
             is clicked.
         """
-        if self.fileName == None:
+        if self.fileName == "":
             self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file")
 
         if self.fileName != "":
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
-        else:
-            self.fileName = None
+
 
     def saveAsFile(self):
-        """ The action performed when the button "Save" un the tool bar
+        """ The action performed when the button "Save as..." in the menubar
             is clicked.
         """
         self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file as...")
 
         if self.fileName != "":
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
-        else:
-            self.fileName = None
+
 
 def main():
     app = QtGui.QApplication(sys.argv)
