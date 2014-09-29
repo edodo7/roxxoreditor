@@ -31,7 +31,10 @@ def modulesDialog(modulesList):
         modulesList -- The list of modules name.
     """
     modulesList = list(map(lambda moduleExt: moduleExt[1:].upper(), modulesList))
-    return QtGui.QInputDialog.getItem(None, 'Module selecter',
+    modulesList.sort()
+    ext, proceed = QtGui.QInputDialog.getItem(None, 'Module selecter',
                                'The extension of the file isn\'t known by ' +
                                'Roxxor Editor.\nChoose the module to use ' +
                                'with the file :', modulesList, editable=False)
+    if proceed:
+        return '.' + ext.lower()
