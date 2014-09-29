@@ -98,9 +98,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """ Definition of the contextual menu of the tree view.
         """
         addKey = QtGui.QAction("Add value", self)
-        # addKey.triggered.connect() TODO
-        addElement = QtGui.QAction("Add element", self)
-        # addElement.triggered.connect()
+        addKey.triggered.connect(self.addKey)
         addList = QtGui.QAction("Add list", self)
         addList.triggered.connect(self.addList)
         addDict = QtGui.QAction("Add dictionary", self)
@@ -113,7 +111,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         treeItem = self.treeWidget.selectedItems()[0]
         if treeItem.text(0) != "root":
             if treeItem.text(0).split()[1] == "[]":
-                menu.addAction(addElement)
+                menu.addAction(addKey)
                 menu.addAction(addList)
                 menu.addAction(addDict)
                 menu.addAction(remove)
@@ -128,19 +126,30 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
             menu.exec_(QtGui.QCursor.pos())
 
+    def addKey(self):
+        """ Add a key in the data structure selected by the user in
+            the tree view.
+        """
+        item = self.treeWidget.selectedItems()[0]
+        path = self.getTreePath(item)
+        dataStruct = self.extractDataStructure(self.data, path)
+        if type(dataStruct) == list:
+            index = askForIndex(0, len(dataStruct))
+            data = askForData()
+            dataStruct.insert(index, data)
+        elif type(dataStruct) == dict:
+            keyName = askForKey()
+            data = askForData()
+            dataStruct[keyName] = data
+        self.recreateTreeView(self.data)
+
     def addDictionary(self):
         """ Add a dictionary in the data structure selected by the user in
             the tree view.
         """
         item = self.treeWidget.selectedItems()[0]
         path = self.getTreePath(item)
-        dataStruct = self.data
-        for i in range(len(path)):
-            try:
-                j = int(path[i])
-                dataStruct = dataStruct[j]
-            except ValueError:
-                dataStruct = dataStruct[path[i].split(" ")[0]]
+        dataStruct = self.extractDataStructure(self.data, path)
         if type(dataStruct) == list:
             index = askForIndex(0, len(dataStruct))
             dataStruct.insert(index, dict())
@@ -152,9 +161,32 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
 
     def addList(self):
+        """ Add a list in the data structure selected by the user in
+            the tree view.
         """
+        item = self.treeWidget.selectedItems()[0]
+        path = self.getTreePath(item)
+        dataStruct = self.extractDataStructure(self.data, path)
+        if type(dataStruct) == list:
+            index = askForIndex(0, len(dataStruct))
+            dataStruct.insert(index, list())
+            print(dataStruct)
+        elif type(dataStruct) == dict:
+            keyName = askForKey()
+            dataStruct[keyName] = list()
+        self.recreateTreeView(self.data)
+
+    def extractDataStructure(self, dataStruct, path):
+        """ Extract the sub data structure defined by the path from dataStruct.
         """
-        print("Add list")
+        dataStruct = self.data
+        for i in range(len(path)):
+            try:
+                j = int(path[i])
+                dataStruct = dataStruct[j]
+            except ValueError:
+                dataStruct = dataStruct[path[i].split(" ")[0]]
+        return dataStruct
 
     def loadDataIntoTreeWidget(self, data, parent, force_explore=None):
         """ Load data from a list or a dictionary into the TreeWidget.
