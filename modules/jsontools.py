@@ -106,7 +106,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         editKey = QtGui.QAction("Edit", self)
         # editKey.triggered.connect() TODO
         remove = QtGui.QAction("Remove", self)
-        # remove.triggered.connect() TODO
+        remove.triggered.connect(self.remove)
         menu = QtGui.QMenu(self)
         treeItem = self.treeWidget.selectedItems()[0]
         if treeItem.text(0) != "root":
@@ -119,7 +119,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                 menu.addAction(addKey)
                 menu.addAction(addList)
                 menu.addAction(addDict)
-                menu.addAction(editKey)
+                menu.addAction(remove)
             else:
                 menu.addAction(editKey)
                 menu.addAction(remove)
@@ -181,6 +181,25 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             keyName = askForKey()
             originalDataStruct[keyName] = list()
             dataStruct[keyName] = list()
+        self.recreateTreeView(self.data)
+
+    def remove(self):
+        """ Remove the data represented by the item user clicked on.
+        """
+        item = self.treeWidget.selectedItems()[0]
+        path = self.getTreePath(item)
+        dataStruct = self.data
+        for i in range(len(path)-1):
+            try:
+                j = int(path[i])
+                dataStruct = dataStruct[j]
+            except ValueError:
+                dataStruct = dataStruct[path[i].split(" ")[0]]
+        try:
+            j = int(path[len(path)-1])
+            dataStruct.pop(j)
+        except ValueError:
+            del(dataStruct[path[len(path)-1].split(" ")[0]])
         self.recreateTreeView(self.data)
 
     def extractDataStructure(self, dataStruct, path):
