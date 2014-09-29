@@ -132,14 +132,17 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """
         item = self.treeWidget.selectedItems()[0]
         path = self.getTreePath(item)
+        originalDataStruct = self.extractDataStructure(self.originalData, path)
         dataStruct = self.extractDataStructure(self.data, path)
         if type(dataStruct) == list:
             index = askForIndex(0, len(dataStruct))
             data = askForData()
+            originalDataStruct.insert(index, data)
             dataStruct.insert(index, data)
         elif type(dataStruct) == dict:
             keyName = askForKey()
             data = askForData()
+            originalDataStruct[keyName] = data
             dataStruct[keyName] = data
         self.recreateTreeView(self.data)
 
@@ -149,13 +152,15 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """
         item = self.treeWidget.selectedItems()[0]
         path = self.getTreePath(item)
+        originalDataStruct = self.extractDataStructure(self.originalData, path)
         dataStruct = self.extractDataStructure(self.data, path)
         if type(dataStruct) == list:
             index = askForIndex(0, len(dataStruct))
+            originalDataStruct.insert(index, dict())
             dataStruct.insert(index, dict())
-            print(dataStruct)
         elif type(dataStruct) == dict:
             keyName = askForKey()
+            originalDataStruct[keyName] = dict()
             dataStruct[keyName] = dict()
         self.recreateTreeView(self.data)
 
@@ -166,20 +171,21 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """
         item = self.treeWidget.selectedItems()[0]
         path = self.getTreePath(item)
+        originalDataStruct = self.extractDataStructure(self.originalData, path)
         dataStruct = self.extractDataStructure(self.data, path)
         if type(dataStruct) == list:
             index = askForIndex(0, len(dataStruct))
+            originalDataStruct.insert(index, list())
             dataStruct.insert(index, list())
-            print(dataStruct)
         elif type(dataStruct) == dict:
             keyName = askForKey()
+            originalDataStruct[keyName] = list()
             dataStruct[keyName] = list()
         self.recreateTreeView(self.data)
 
     def extractDataStructure(self, dataStruct, path):
         """ Extract the sub data structure defined by the path from dataStruct.
         """
-        dataStruct = self.data
         for i in range(len(path)):
             try:
                 j = int(path[i])
