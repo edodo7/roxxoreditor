@@ -30,21 +30,10 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         QtGui.QWidget.__init__(self)
 
         # Tree widget
-        self.treeWidget = TreeWidgetJSON(self) #QtGui.QTreeWidget()
-        # self.treeWidget.setHeaderHidden(True)
-        # self.treeWidget.setAlternatingRowColors(True)
-        # self.rootItem = QtGui.QTreeWidgetItem()
-        # self.rootItem.setData(0, 0, "root")
-        # self.treeWidget.insertTopLevelItem(0, self.rootItem)
+        self.treeWidget = TreeWidgetJSON(self)
         self.connect(self.treeWidget,
                      QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"),
                      self.onClickItem)
-
-        # self.treeWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-
-        # self.connect(self.treeWidget,
-        #              QtCore.SIGNAL('customContextMenuRequested(QPoint)'),
-        #              self.contextMenu)
 
         # Labels
         self.pathLabel = QtGui.QLabel("/")
