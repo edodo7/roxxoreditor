@@ -42,6 +42,6 @@ def askForIndex(minimum: int, maximum: int):
     """ Create and display a dialog that ask to the user an index.
     """
     index, ok = QtGui.QInputDialog.getInteger(None, 'Index', 
-            'Enter the index:', min=minimum, max=maximum)
+            'Enter the index:', value=maximum, min=minimum, max=maximum)
     # TODO manage ok
     return index
