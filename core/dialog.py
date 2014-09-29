@@ -32,11 +32,11 @@ def askForKey():
 def askForData():
     """ Create and display a dialog that ask to the user the data.
     """
-    key, ok = QtGui.QInputDialog.getText(None, 'Data', 
+    data, ok = QtGui.QInputDialog.getText(None, 'Data', 
             'Enter the data:')
     # TODO manage ok
     # TODO manage data type
-    return key
+    return data
 
 def askForIndex(minimum: int, maximum: int):
     """ Create and display a dialog that ask to the user an index.
