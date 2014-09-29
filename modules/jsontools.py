@@ -312,35 +312,6 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         except ValueError:
             self.textField.setText(str(dataStruct[self.key]))
 
-    # def addButtonClicked(self):
-    #     """ Action performed when the add button is clicked
-    #     """
-    #     dataStruct = self.data
-    #     for i in range(len(self.path)-1):
-    #         try:
-    #             j = int(self.path[i])
-    #             dataStruct = dataStruct[j]
-    #         except ValueError:
-    #             dataStruct = dataStruct[self.path[i]]
-    #     self.key = self.keyTextField.text()
-    #     data = self.textField.toPlainText()
-    #     if self.key != "":
-    #         if type(dataStruct) == list:
-    #             try:
-    #                 i = int(self.key)
-    #                 dataStruct[i] = data
-    #             except ValueError:
-    #                 errorDialog("The index must be an integer!")
-    #         elif type(dataStruct) == dict:
-    #             dataStruct[self.key] = data
-
-    #         for i in range(self.rootItem.childCount()):
-    #             self.rootItem.removeChild(self.rootItem.child(i))
-
-    #         self.setData(self.data)
-    #     else:
-    #         errorDialog("A key can't be empty!")
-
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
