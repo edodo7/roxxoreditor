@@ -121,7 +121,6 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
         """ Action performed when an item in the QTreeWidget is clicked.
         """
-        print(self.path)
         if self.path and self.key != None:
             self.saveValue()
         if self.data and self.treeWidget.isLeaf(item) and len(item.text(0).split()) == 1:
