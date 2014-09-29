@@ -30,6 +30,17 @@ def askForIndex(minimum: int, maximum: int):
             'Enter the index:', value=maximum, min=minimum, max=maximum)
     return index, ok
 
+def isConfirmed():
+    """
+    """
+    reply = QtGui.QMessageBox.question(None, 'Message',
+                            "Are you sure to delete this item?",
+                            QtGui.QMessageBox.Yes |
+                            QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+    if reply == QtGui.QMessageBox.Yes:
+        return True
+    return False
+
 KEY_LABEL_DEFAULT = "Key: "
 RESTORE_BUTTON_DEFAULT = "Restore original value"
 
@@ -437,19 +448,19 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     def remove(self):
         """ Remove the data represented by the item user clicked on.
         """
-        item = self.selectedItems()[0]
-        path = self.getTreePath(item)
-        dataStruct = self.roxxorEditorJSON.extractDataStructure(
-                                    self.roxxorEditorJSON.data, path)
-        for i in range(len(path)-1):
+        if isConfirmed():
+            item = self.selectedItems()[0]
+            path = self.getTreePath(item)
+            dataStruct = self.roxxorEditorJSON.data
+            for i in range(len(path)-1):
+                try:
+                    j = int(path[i])
+                    dataStruct = dataStruct[j]
+                except ValueError:
+                    dataStruct = dataStruct[path[i]]
             try:
-                j = int(path[i])
-                dataStruct = dataStruct[j]
+                j = int(path[len(path)-1])
+                dataStruct.pop(j)
             except ValueError:
-                dataStruct = dataStruct[path[i].split(" ")[0]]
-        try:
-            j = int(path[len(path)-1])
-            dataStruct.pop(j)
-        except ValueError:
-            del(dataStruct[path[len(path)-1].split(" ")[0]])
-        self.recreateTreeView(self.roxxorEditorJSON.data)
+                del(dataStruct[path[len(path)-1]])
+            self.recreateTreeView(self.roxxorEditorJSON.data)
