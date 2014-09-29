@@ -30,11 +30,12 @@ def askForIndex(minimum: int, maximum: int):
             'Enter the index:', value=maximum, min=minimum, max=maximum)
     return index, ok
 
-def isConfirmed():
+def isConfirmed(description: str):
+    """ Create and display a dialog that ask to the user if he confirm
+        the action described in the string in parameter
     """
-    """
-    reply = QtGui.QMessageBox.question(None, 'Message',
-                            "Are you sure to delete this item?",
+    reply = QtGui.QMessageBox.question(None, 'Confirmation',
+                            description,
                             QtGui.QMessageBox.Yes |
                             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
     if reply == QtGui.QMessageBox.Yes:
@@ -448,7 +449,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     def remove(self):
         """ Remove the data represented by the item user clicked on.
         """
-        if isConfirmed():
+        if isConfirmed("Are you sure to delete this item?"):
             item = self.selectedItems()[0]
             path = self.getTreePath(item)
             dataStruct = self.roxxorEditorJSON.data
