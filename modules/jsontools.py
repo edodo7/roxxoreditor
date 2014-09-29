@@ -103,26 +103,25 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         addList.triggered.connect(self.addList)
         addDict = QtGui.QAction("Add dictionary", self)
         addDict.triggered.connect(self.addDictionary)
-        editKey = QtGui.QAction("Edit", self)
-        # editKey.triggered.connect() TODO
         remove = QtGui.QAction("Remove", self)
         remove.triggered.connect(self.remove)
         menu = QtGui.QMenu(self)
         treeItem = self.treeWidget.selectedItems()[0]
         if treeItem.text(0) != "root":
-            if treeItem.text(0).split()[1] == "[]":
-                menu.addAction(addKey)
-                menu.addAction(addList)
-                menu.addAction(addDict)
-                menu.addAction(remove)
-            elif treeItem.text(0).split()[1] == "{}":
-                menu.addAction(addKey)
-                menu.addAction(addList)
-                menu.addAction(addDict)
+            labelSplitted = treeItem.text(0).split()
+            if len(labelSplitted) == 1:
                 menu.addAction(remove)
             else:
-                menu.addAction(editKey)
-                menu.addAction(remove)
+                if labelSplitted[1] == "[]":
+                    menu.addAction(addKey)
+                    menu.addAction(addList)
+                    menu.addAction(addDict)
+                    menu.addAction(remove)
+                elif labelSplitted[1] == "{}":
+                    menu.addAction(addKey)
+                    menu.addAction(addList)
+                    menu.addAction(addDict)
+                    menu.addAction(remove)
 
             menu.exec_(QtGui.QCursor.pos())
 
@@ -265,7 +264,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """
         if self.path and self.key != None:
             self.saveValue()
-        if self.data and self.isLeaf(item):
+        if self.data and self.isLeaf(item) and len(item.text(0).split()) == 1:
             dataSought = self.data
             self.path = self.getTreePath(item)
             for element in self.path:
