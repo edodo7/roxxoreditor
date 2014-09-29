@@ -357,22 +357,20 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         remove.triggered.connect(self.remove)
         menu = QtGui.QMenu(self)
         treeItem = self.selectedItems()[0]
-        if treeItem.text(0) != "root":
-            labelSplitted = treeItem.text(0).split()
-            if len(labelSplitted) == 1:
+        if treeItem.data != "root":
+            if treeItem.dataType == None:
                 menu.addAction(remove)
             else:
-                if labelSplitted[1] == "[]":
+                if treeItem.dataType == list:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(remove)
-                elif labelSplitted[1] == "{}":
+                elif treeItem.dataType == dict:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(remove)
-
             menu.exec_(QtGui.QCursor.pos())
 
     def addKey(self):
