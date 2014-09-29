@@ -14,25 +14,21 @@ def askForKey():
     """
     key, ok = QtGui.QInputDialog.getText(None, 'Key name', 
             'Enter the key name:')
-    # TODO manage ok
-    return key
+    return key, ok
 
 def askForData():
     """ Create and display a dialog that ask to the user the data.
     """
     data, ok = QtGui.QInputDialog.getText(None, 'Data', 
             'Enter the data:')
-    # TODO manage ok
-    # TODO manage data type
-    return data
+    return data, ok
 
 def askForIndex(minimum: int, maximum: int):
     """ Create and display a dialog that ask to the user an index.
     """
     index, ok = QtGui.QInputDialog.getInteger(None, 'Index', 
             'Enter the index:', value=maximum, min=minimum, max=maximum)
-    # TODO manage ok
-    return index
+    return index, ok
 
 KEY_LABEL_DEFAULT = "Key: "
 RESTORE_BUTTON_DEFAULT = "Restore original value"
@@ -378,15 +374,19 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         dataStruct = self.roxxorEditorJSON.extractDataStructure(
                                     self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index = askForIndex(0, len(dataStruct))
-            data = askForData()
-            originalDataStruct.insert(index, data)
-            dataStruct.insert(index, data)
+            index, ok = askForIndex(0, len(dataStruct))
+            if ok:
+                data, ok = askForData()
+                if ok:
+                    originalDataStruct.insert(index, data)
+                    dataStruct.insert(index, data)
         elif type(dataStruct) == dict:
-            keyName = askForKey()
-            data = askForData()
-            originalDataStruct[keyName] = data
-            dataStruct[keyName] = data
+            keyName, ok = askForKey()
+            if ok:
+                data, ok = askForData()
+                if ok:
+                    originalDataStruct[keyName] = data
+                    dataStruct[keyName] = data
         self.recreateTreeView(self.roxxorEditorJSON.data)
 
     def addDictionary(self):
@@ -400,13 +400,15 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         dataStruct = self.roxxorEditorJSON.extractDataStructure(
                                     self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index = askForIndex(0, len(dataStruct))
-            originalDataStruct.insert(index, dict())
-            dataStruct.insert(index, dict())
+            index, ok = askForIndex(0, len(dataStruct))
+            if ok:
+                originalDataStruct.insert(index, dict())
+                dataStruct.insert(index, dict())
         elif type(dataStruct) == dict:
-            keyName = askForKey()
-            originalDataStruct[keyName] = dict()
-            dataStruct[keyName] = dict()
+            keyName, ok = askForKey()
+            if ok:
+                originalDataStruct[keyName] = dict()
+                dataStruct[keyName] = dict()
         self.recreateTreeView(self.roxxorEditorJSON.data)
 
 
@@ -421,13 +423,15 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         dataStruct = self.roxxorEditorJSON.extractDataStructure(
                                     self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index = askForIndex(0, len(dataStruct))
-            originalDataStruct.insert(index, list())
-            dataStruct.insert(index, list())
+            index, ok = askForIndex(0, len(dataStruct))
+            if ok:
+                originalDataStruct.insert(index, list())
+                dataStruct.insert(index, list())
         elif type(dataStruct) == dict:
-            keyName = askForKey()
-            originalDataStruct[keyName] = list()
-            dataStruct[keyName] = list()
+            keyName, ok = askForKey()
+            if ok:
+                originalDataStruct[keyName] = list()
+                dataStruct[keyName] = list()
         self.recreateTreeView(self.roxxorEditorJSON.data)
 
     def remove(self):
