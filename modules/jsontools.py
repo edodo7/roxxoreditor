@@ -464,4 +464,5 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 dataStruct.pop(j)
             except ValueError:
                 del(dataStruct[path[len(path)-1]])
+            self.roxxorEditorJSON.originalData = copy.deepcopy(self.roxxorEditorJSON.data)
             self.recreateTreeView(self.roxxorEditorJSON.data)
