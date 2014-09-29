@@ -4,6 +4,7 @@
 import json
 import copy
 from roxxoreditorwidget import *
+from dialog import *
 
 def registerModule(modulesDict):
     modulesDict['.json'] = RoxxorEditorJSON
@@ -99,11 +100,11 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         addKey = QtGui.QAction("Add value", self)
         # addKey.triggered.connect() TODO
         addElement = QtGui.QAction("Add element", self)
-        # addElement.triggered.connect() TODO
+        # addElement.triggered.connect()
         addList = QtGui.QAction("Add list", self)
-        # addList.triggered.connect() TODO
+        addList.triggered.connect(self.addList)
         addDict = QtGui.QAction("Add dictionary", self)
-        # addDict.triggered.connect() TODO
+        addDict.triggered.connect(self.addDictionary)
         editKey = QtGui.QAction("Edit", self)
         # editKey.triggered.connect() TODO
         remove = QtGui.QAction("Remove", self)
@@ -111,20 +112,49 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         menu = QtGui.QMenu(self)
         treeItem = self.treeWidget.selectedItems()[0]
         if treeItem.text(0) != "root":
-            if self.isLeaf(treeItem):
+            if treeItem.text(0).split()[1] == "[]":
+                menu.addAction(addElement)
+                menu.addAction(addList)
+                menu.addAction(addDict)
+                menu.addAction(remove)
+            elif treeItem.text(0).split()[1] == "{}":
+                menu.addAction(addKey)
+                menu.addAction(addList)
+                menu.addAction(addDict)
+                menu.addAction(editKey)
+            else:
                 menu.addAction(editKey)
                 menu.addAction(remove)
-            else:
-                if treeItem.text(0).split()[1] == "[]":
-                    menu.addAction(addElement)
-                    menu.addAction(addList)
-                    menu.addAction(addDict)
-                    menu.addAction(remove)
-                elif treeItem.text(0).split()[1] == "{}":
-                    menu.addAction(addKey)
-                    menu.addAction(editKey)
 
             menu.exec_(QtGui.QCursor.pos())
+
+    def addDictionary(self):
+        """ Add a dictionary in the data structure selected by the user in
+            the tree view.
+        """
+        item = self.treeWidget.selectedItems()[0]
+        path = self.getTreePath(item)
+        dataStruct = self.data
+        for i in range(len(path)):
+            try:
+                j = int(path[i])
+                dataStruct = dataStruct[j]
+            except ValueError:
+                dataStruct = dataStruct[path[i].split(" ")[0]]
+        if type(dataStruct) == list:
+            index = askForIndex(0, len(dataStruct))
+            dataStruct.insert(index, dict())
+            print(dataStruct)
+        elif type(dataStruct) == dict:
+            keyName = askForKey()
+            dataStruct[keyName] = dict()
+        self.recreateTreeView(self.data)
+
+
+    def addList(self):
+        """
+        """
+        print("Add list")
 
     def loadDataIntoTreeWidget(self, data, parent, force_explore=None):
         """ Load data from a list or a dictionary into the TreeWidget.
@@ -284,6 +314,20 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """
         return item.childCount() == 0
 
+    def recreateTreeView(self, data):
+        """
+        """
+        # "Destroy" old root and create a new one
+        self.treeWidget.takeTopLevelItem(0)
+        self.rootItem = QtGui.QTreeWidgetItem()
+        self.rootItem.setData(0, 0, "root")
+        self.treeWidget.insertTopLevelItem(0, self.rootItem)
+        # Load data into the tree and sort it
+        self.loadDataIntoTreeWidget(data, self.rootItem)
+        self.treeWidget.sortItems(0,0)
+        self.rootItem.setExpanded(True)
+
+
     def setData(self, filename):
         """ Set the instance variable self.data and refresh the tree view.
         """
@@ -292,16 +336,8 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         self.key = None
         self.path = []
         self.pathLabel.setText("/")
-        # "Destroy" old root and create a new one
-        self.treeWidget.takeTopLevelItem(0)
-        self.rootItem = QtGui.QTreeWidgetItem()
-        self.rootItem.setData(0, 0, "root")
-        self.treeWidget.insertTopLevelItem(0, self.rootItem)
-        # Load data into the tree and sort it
-        self.loadDataIntoTreeWidget(self.data, self.rootItem)
-        self.treeWidget.sortItems(0,0)
-        self.rootItem.setExpanded(True)
-
+        self.recreateTreeView(self.data)
+        
     def read(self, filename):
         """ Reads the file specified by the filename and returns the content
             as a python dict.

@@ -20,3 +20,19 @@ def errorDialog(errorContent):
         errorContent -- The str contening the error explanation to display.
     """
     QtGui.QMessageBox.warning(None, 'Error', errorContent)
+
+def askForKey():
+    """ Create and display a dialog that ask to the user the key name.
+    """
+    key, ok = QtGui.QInputDialog.getText(None, 'Key name', 
+            'Enter the key name:')
+    # TODO manage ok
+    return key
+
+def askForIndex(minimum: int, maximum: int):
+    """ Create and display a dialog that ask to the user an index.
+    """
+    index, ok = QtGui.QInputDialog.getInteger(None, 'Key name', 
+            'Enter the index:', min=minimum, max=maximum)
+    # TODO manage ok
+    return index
