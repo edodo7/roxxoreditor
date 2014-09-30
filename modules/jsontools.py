@@ -355,6 +355,10 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         addDict.triggered.connect(self.addDictionary)
         remove = QtGui.QAction("Remove", self)
         remove.triggered.connect(self.remove)
+        createDict = QtGui.QAction("Create dictionary", self)
+        createDict.triggered.connect(self.createDictOnRoot)
+        createList = QtGui.QAction("Create list", self)
+        createList.triggered.connect(self.createListOnRoot)
         menu = QtGui.QMenu(self)
         treeItem = self.selectedItems()[0]
         if treeItem.data != "root":
@@ -371,7 +375,22 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(remove)
-            menu.exec_(QtGui.QCursor.pos())
+        else:
+            if treeItem.childCount() == 0 and treeItem.dataType == None:
+                menu.addAction(createList)
+                menu.addAction(createDict)
+            elif treeItem.dataType == list:
+                menu.addAction(addKey)
+                menu.addAction(addList)
+                menu.addAction(addDict)
+                menu.addAction(remove)
+            elif treeItem.dataType == dict:
+                menu.addAction(addKey)
+                menu.addAction(addList)
+                menu.addAction(addDict)
+                menu.addAction(remove)
+        menu.exec_(QtGui.QCursor.pos())
+
 
     def addKey(self):
         """ Add a key in the data structure selected by the user in
@@ -464,3 +483,17 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 del(dataStruct[path[len(path)-1]])
             self.roxxorEditorJSON.originalData = copy.deepcopy(self.roxxorEditorJSON.data)
             self.recreateTreeView(self.roxxorEditorJSON.data)
+
+    def createDictOnRoot(self):
+        """
+        """
+        self.roxxorEditorJSON.data = {}
+        self.roxxorEditorJSON.originalData = {}
+        self.recreateTreeView(self.roxxorEditorJSON.data)
+
+    def createListOnRoot(self):
+        """
+        """
+        self.roxxorEditorJSON.data = []
+        self.roxxorEditorJSON.originalData = []
+        self.recreateTreeView(self.roxxorEditorJSON.data)
