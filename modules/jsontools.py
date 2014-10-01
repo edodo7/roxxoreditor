@@ -145,7 +145,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                 j = int(path[i])
                 dataStruct = dataStruct[j]
             except ValueError:
-                dataStruct = dataStruct[path[i].split(" ")[0]]
+                dataStruct = dataStruct[path[i]]
         return dataStruct
 
     def onClickItem(self, item: QtGui.QTreeWidgetItem, column: int):
@@ -207,13 +207,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
-        dataStruct = self.data
-        for i in range(len(self.path)-1):
-            try:
-                j = int(self.path[i])
-                dataStruct = dataStruct[j]
-            except ValueError:
-                dataStruct = dataStruct[self.path[i]]
+        dataStruct = self.extractDataStructure(self.data, self.path)
         try:
             try:
                 oldType = type(dataStruct[int(self.key)])
