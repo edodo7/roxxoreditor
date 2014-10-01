@@ -25,6 +25,10 @@ def askForData():
 
 def askForIndex(minimum: int, maximum: int):
     """ Create and display a dialog that ask to the user an index.
+
+    Keyword arguments:
+        minimum -- Lower boundary of the index choice.
+        maximum -- Higher boundary of the index choice.
     """
     index, ok = QtGui.QInputDialog.getInteger(None, 'Index', 
             'Enter the index:', value=maximum, min=minimum, max=maximum)
@@ -32,7 +36,10 @@ def askForIndex(minimum: int, maximum: int):
 
 def isConfirmed(description: str):
     """ Create and display a dialog that ask to the user if he confirm
-        the action described in the string in parameter
+        the action described in the string in parameter.
+
+    Keyword arguments:
+        description -- The description of what have to be confirmed.
     """
     reply = QtGui.QMessageBox.question(None, 'Confirmation',
                             description,
@@ -115,8 +122,13 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
         self.setLayout(layout)
 
-    def extractDataStructure(self, dataStruct, path):
+    def extractDataStructure(self, dataStruct, path: list):
         """ Extract the sub data structure defined by the path from dataStruct.
+
+        Keyword arguments:
+            dataStruct -- The data structure in wich we search for the sub data
+                          structure.
+            path       -- The path to the sub data structure.
         """
         for i in range(len(path)):
             try:
@@ -126,8 +138,12 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                 dataStruct = dataStruct[path[i].split(" ")[0]]
         return dataStruct
 
-    def onClickItem(self, item: QtGui.QTreeWidgetItem, i):
+    def onClickItem(self, item: QtGui.QTreeWidgetItem, column: int):
         """ Action performed when an item in the QTreeWidget is clicked.
+
+        Keyword arguments:
+            item   -- The item user clicked on.
+            column -- The column number clicked (not used here).
         """
         if self.path and self.key != None:
             self.saveValue()
@@ -204,6 +220,9 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
     def setData(self, filename):
         """ Set the instance variable self.data and refresh the tree view.
+
+        Keyword arguments:
+            filename -- The name of the file with the contents to process.
         """
         self.originalData = self.read(filename)
         self.data = copy.deepcopy(self.originalData)
@@ -242,7 +261,12 @@ class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
     """ A tree widget item specialised for displaying JSON data.
     """
     def __init__(self, data, dataType=None):
-        """
+        """ Initialization of the object.
+
+        Keyword arguments:
+            data     -- The data that will contain the tree widget item.
+            dataType -- The data's type. If not a list or a dict, leave setted
+                        to None.
         """
         QtGui.QTreeWidgetItem.__init__(self)
         self.data = data
@@ -250,6 +274,10 @@ class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
         self.setText()
 
     def setText(self):
+        """ Overload the original method by creating the string according
+            to the dataType. If it is a list add "[]" after the data, if it
+            is a dict add "{}" after the data.
+        """
         s = str(self.data)
         if self.dataType == list:
             s += " []"
@@ -261,7 +289,10 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     """ A tree widget specialised for displaying a JSON.
     """
     def __init__(self, roxxorEditorJSONwidget: RoxxorEditorJSON):
-        """
+        """ Initialization of the object.
+
+        Keyword arguments:
+            roxxorEditorJSONwidget -- The roxxor editor JSON widget associated.           
         """
         QtGui.QTreeWidget.__init__(self)
         self.setHeaderHidden(True)
@@ -278,8 +309,13 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                      self.contextMenu)
 
 
-    def loadData(self, data, parent, force_explore=None):
+    def loadData(self, data, parent: TreeWidgetItemJSON, force_explore=None):
         """ Load data from a list or a dictionary into the TreeWidget.
+
+        Keyword arguments:
+            data          -- The data to load in the tree.
+            parent        -- The parent of the current item.
+            force_explore -- Not None if the current item has to be explored.
         """
         if type(data) == str or type(data) == int or type(data) == bool or data == None:
             item = TreeWidgetItemJSON(data)
@@ -313,6 +349,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
 
     def recreateTreeView(self, data):
         """ Destroy the old tree and rebuild it from data in parameter.
+
+        Keyword arguments:
+            data -- The data structure to fill the tree with.
         """
         # "Destroy" old root and create a new one
         self.takeTopLevelItem(0)
@@ -326,6 +365,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     def getTreePath(self, item: QtGui.QTreeWidgetItem):
         """ Return the list of ancestors of the item passed in parameters
             (itself included) sorted in ascending order.
+
+        Keyword arguments:
+            item -- The item to get the path.
         """
         path = [str(item.data)]
         parent = item.parent()
@@ -341,11 +383,17 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     def isLeaf(self, item: QtGui.QTreeWidgetItem):
         """ Return True if the item is a leaf of the QTreeWidget else
             return False.
+
+        Keyword arguments:
+            item -- The tree item to test.
         """
         return item.childCount() == 0
 
     def contextMenu(self, qPoint):
         """ Definition of the contextual menu of the tree view.
+
+        Keyword arguments:
+            qPoint -- The position of the mouse when the user clicked.
         """
         addKey = QtGui.QAction("Add value", self)
         addKey.triggered.connect(self.addKey)
@@ -490,14 +538,14 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             self.roxxorEditorJSON.modificationsButton.hide()
 
     def createDictOnRoot(self):
-        """
+        """ Create a dictionary on the "root" of the JSON.
         """
         self.roxxorEditorJSON.data = {}
         self.roxxorEditorJSON.originalData = {}
         self.recreateTreeView(self.roxxorEditorJSON.data)
 
     def createListOnRoot(self):
-        """
+        """ Create an array on the "root" of the JSON.
         """
         self.roxxorEditorJSON.data = []
         self.roxxorEditorJSON.originalData = []
