@@ -483,6 +483,11 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 del(dataStruct[path[len(path)-1]])
             self.roxxorEditorJSON.originalData = copy.deepcopy(self.roxxorEditorJSON.data)
             self.recreateTreeView(self.roxxorEditorJSON.data)
+            self.roxxorEditorJSON.key = None
+            self.roxxorEditorJSON.keyLabel.hide()
+            self.roxxorEditorJSON.textField.hide()
+            self.roxxorEditorJSON.valueLabel.hide()
+            self.roxxorEditorJSON.modificationsButton.hide()
 
     def createDictOnRoot(self):
         """
