@@ -168,7 +168,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                     dataSought = dataSought[element]
             self.key = self.path[len(self.path)-1]
             self.keyLabel.setText(KEY_LABEL_DEFAULT+str(self.key))
-            self.pathLabel.setText("/"+'>'.join(self.path))
+            self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path]))
             self.textField.setText(str(dataSought))
             self.keyLabel.show()
             self.valueLabel.show()
@@ -180,7 +180,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
             # Update path
             self.path = self.treeWidget.getTreePath(item)
-            self.pathLabel.setText("/"+'>'.join(self.path))
+            self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path ]))
 
             self.keyLabel.hide()
             self.valueLabel.hide()
@@ -192,34 +192,20 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def restoreButtonClicked(self):
         """ Action performed when the restore button is clicked.
         """
-        dataStruct = self.originalData
-        for i in range(len(self.path)-1):
-            try:
-                j = int(self.path[i])
-                dataStruct = dataStruct[j]
-            except ValueError:
-                dataStruct = dataStruct[self.path[i]]
-        try:
-            self.textField.setText(str(dataStruct[int(self.key)]))
-        except ValueError:
-            self.textField.setText(str(dataStruct[self.key]))
+        subPath = self.path[0:len(self.originalData)-1]
+        dataStruct = self.extractDataStructure(self.originalData, subPath)
+        self.textField.setText(str(dataStruct[self.key]))
 
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
-        dataStruct = self.extractDataStructure(self.data, self.path)
+        subPath = self.path[0:len(self.originalData)-1]
+        dataStruct = self.extractDataStructure(self.originalData, subPath)
         try:
-            try:
-                oldType = type(dataStruct[int(self.key)])
-                dataStruct[int(self.key)] = oldType(self.textField.toPlainText())
-            except ValueError:
-                oldType = type(dataStruct[self.key])
-                dataStruct[self.key] = oldType(self.textField.toPlainText())
-        except TypeError:
-            try:
-                self.textField.setText(str(dataStruct[int(self.key)]))
-            except ValueError:
-                self.textField.setText(str(dataStruct[self.key]))
+            oldType = type(dataStruct[self.key])
+            dataStruct[self.key] = oldType(self.textField.toPlainText())
+        except ValueError:
+            self.textField.setText(str(dataStruct[self.key]))
             errorDialog("Wrong entry!")
 
     def setData(self, filename):
@@ -373,14 +359,14 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         Keyword arguments:
             item -- The item to get the path.
         """
-        path = [str(item.data)]
+        path = [item.data]
         parent = item.parent()
         if parent != None:
-            path.insert(0, str(parent.data))
+            path.insert(0, parent.data)
         while parent != None:
             parent = parent.parent()
             if parent != None:
-                path.insert(0, str(parent.data))
+                path.insert(0, parent.data)
         path.pop(0)
         return path
 
