@@ -107,14 +107,19 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         Keyword arguments:
             data -- The data structure to fill the tree with.
         """
-        # "Destroy" old root and create a new one
-        self.takeTopLevelItem(0)
-        self.rootItem = TreeWidgetItemJSON("root")
-        self.insertTopLevelItem(0, self.rootItem)
+        self.recreateEmptyTreeView()
         # Load data into the tree and sort it
         self.loadData(data, self.rootItem)
         self.sortItems(0,0)
         self.rootItem.setExpanded(True)
+
+    def recreateEmptyTreeView(self):
+        """ Destroy the old tree and rebuild an empty one.
+        """
+        # "Destroy" old root and create a new one
+        self.takeTopLevelItem(0)
+        self.rootItem = TreeWidgetItemJSON("root")
+        self.insertTopLevelItem(0, self.rootItem)
 
     def getTreePath(self, item: QtGui.QTreeWidgetItem):
         """ Return the list of ancestors of the item passed in parameters

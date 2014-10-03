@@ -70,6 +70,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         menubar = self.menuBar()
 
         fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(newAction)
         fileMenu.addAction(openAction)
         fileMenu.addAction(saveAction)
         fileMenu.addAction(saveAsAction)
@@ -109,7 +110,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
 
         if ext != None:
             # Reset Data
-            # self.roxxorWidget.resetData()  # ToDo in jsontools
+            self.roxxorWidget.resetData()
             self.displayStatus('New file opened.')
         else:
             self.displayStatus('New file cancelled.')

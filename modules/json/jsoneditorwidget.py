@@ -153,6 +153,16 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             self.textField.setText(str(originalDataStruct[self.key]))
             errorDialog("Wrong entry!")
 
+    def resetData(self):
+        """ Reset the data to create a new empty file.
+        """
+        self.originalData = {}
+        self.data = {}
+        self.key = None
+        self.path = []
+        self.pathLabel.setText("/")
+        self.treeWidget.recreateEmptyTreeView()
+
     def setData(self, filename):
         """ Set the instance variable self.data and refresh the tree view.
 
