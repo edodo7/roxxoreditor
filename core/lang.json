@@ -1,0 +1,20 @@
+{
+    "english": {
+        "openAction": "Open",
+        "aboutAction": "About",
+        "saveAsActionTip": "Save the modifications",
+        "readyStatus": "Roxxor Editor ready!",
+        "openFileTitle": "Open a file",
+        "openActionTip": "Open a file",
+        "exitAction": "Exit",
+        "exitActionTip": "Exit application",
+        "aboutActionTip": "Applications informations",
+        "openFileCancelledStatus": "Open file cancelled.",
+        "saveAsAction": "Save as...",
+        "saveActionTip": "Save the modifications",
+        "helpMenu": "&Help",
+        "saveAction": "Save",
+        "fileMenu": "&File"
+    },
+    "french": {}
+}
