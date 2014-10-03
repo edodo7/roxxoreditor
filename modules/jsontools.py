@@ -192,20 +192,21 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def restoreButtonClicked(self):
         """ Action performed when the restore button is clicked.
         """
-        subPath = self.path[0:len(self.originalData)-1]
+        subPath = self.path[0:len(self.path)-1]
         dataStruct = self.extractDataStructure(self.originalData, subPath)
         self.textField.setText(str(dataStruct[self.key]))
 
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
-        subPath = self.path[0:len(self.originalData)-1]
-        dataStruct = self.extractDataStructure(self.originalData, subPath)
+        subPath = self.path[0:len(self.path)-1]
+        dataStruct = dataStruct = self.extractDataStructure(self.data, subPath)
+        originalDataStruct = self.extractDataStructure(self.originalData, subPath)
         try:
-            oldType = type(dataStruct[self.key])
+            oldType = type(originalDataStruct[self.key])
             dataStruct[self.key] = oldType(self.textField.toPlainText())
         except ValueError:
-            self.textField.setText(str(dataStruct[self.key]))
+            self.textField.setText(str(originalDataStruct[self.key]))
             errorDialog("Wrong entry!")
 
     def setData(self, filename):
