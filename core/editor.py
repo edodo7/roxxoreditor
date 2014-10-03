@@ -31,6 +31,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.roxxorWidget)
 
         # Actions
+        newAction = QtGui.QAction('New File', self)
+        newAction.setShortcut('Ctrl+N')
+        newAction.setStatusTip('Create a new file')
+        newAction.triggered.connect(self.newFile)
+
         openAction = QtGui.QAction('Open', self)
         openAction.setShortcut('Ctrl+O')
         openAction.setStatusTip('Open a file')
@@ -51,6 +56,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
 
+        # findAction = QtGui.QAction('Find...', self)
+        # findAction.setShortcut('Ctrl+F')
+        # findAction.setStatusTip('Search key/value')
+        # findAction.triggered.connect(self.findKeyValue)
+
         aboutAction = QtGui.QAction('About', self)
         aboutAction.setShortcut('F1')
         aboutAction.setStatusTip('Application informations')
@@ -65,6 +75,9 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         fileMenu.addAction(saveAsAction)
         fileMenu.addSeparator()
         fileMenu.addAction(exitAction)
+
+        # fileMenu = menubar.addMenu('Fi&nd')
+        # fileMenu.addAction(findAction)
 
         fileMenu = menubar.addMenu('&Help')
         fileMenu.addAction(aboutAction)
@@ -86,6 +99,20 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             delay  -- The number of seconds the message must be displayed.
         """
         self.statusBar().showMessage(status, delay * 1000)
+
+
+    def newFile(self):
+        """ The action performed when the button "New File" in the tool bar
+            is clicked.
+        """
+        ext = self.updateModule()
+
+        if ext != None:
+            # Reset Data
+            # self.roxxorWidget.resetData()  # ToDo in jsontools
+            self.displayStatus('New file opened.')
+        else:
+            self.displayStatus('New file cancelled.')
 
 
     def openFile(self):
@@ -110,7 +137,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.displayStatus('Open file cancelled.')
 
 
-    def updateModule(self, ext):
+    def updateModule(self, ext=""):
         """ Update the module to use, may ask the user the module to use.
 
         Keyword arguments:
