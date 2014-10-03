@@ -394,6 +394,8 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         createDict.triggered.connect(self.createDictOnRoot)
         createList = QtGui.QAction("Create list", self)
         createList.triggered.connect(self.createListOnRoot)
+        editKey = QtGui.QAction("Edit key", self)
+        editKey.triggered.connect(self.editKey)
         menu = QtGui.QMenu(self)
         treeItem = self.selectedItems()[0]
         if treeItem.data != "root":
@@ -404,11 +406,13 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
+                    menu.addAction(editKey)
                     menu.addAction(remove)
                 elif treeItem.dataType == dict:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
+                    menu.addAction(editKey)
                     menu.addAction(remove)
         else:
             if treeItem.childCount() == 0 and treeItem.dataType == None:
@@ -529,6 +533,11 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         self.roxxorEditorJSON.data = []
         self.roxxorEditorJSON.originalData = []
         self.recreateTreeView(self.roxxorEditorJSON.data)
+
+    def editKey(self):
+        """ Edit the key selected by the user.
+        """
+        pass
 
 class DataDialog(QtGui.QMessageBox):
     """ This class is a dialog for asking the user a data in a text text field
