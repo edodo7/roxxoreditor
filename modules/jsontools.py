@@ -59,6 +59,18 @@ def isConfirmed(description: str):
         return True
     return False
 
+def extractDataStructure(dataStruct, path: list):
+    """ Extract the sub data structure defined by the path from dataStruct.
+
+    Keyword arguments:
+        dataStruct -- The data structure in wich we search for the sub data
+                          structure.
+        path       -- The path to the sub data structure.
+    """
+    for i in range(len(path)):
+        dataStruct = dataStruct[path[i]]
+    return dataStruct
+
 KEY_LABEL_DEFAULT = "Key: "
 RESTORE_BUTTON_DEFAULT = "Restore original value"
 
@@ -132,22 +144,6 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
         self.setLayout(layout)
 
-    def extractDataStructure(self, dataStruct, path: list):
-        """ Extract the sub data structure defined by the path from dataStruct.
-
-        Keyword arguments:
-            dataStruct -- The data structure in wich we search for the sub data
-                          structure.
-            path       -- The path to the sub data structure.
-        """
-        for i in range(len(path)):
-            try:
-                j = int(path[i])
-                dataStruct = dataStruct[j]
-            except ValueError:
-                dataStruct = dataStruct[path[i]]
-        return dataStruct
-
     def onClickItem(self, item: QtGui.QTreeWidgetItem, column: int):
         """ Action performed when an item in the QTreeWidget is clicked.
 
@@ -193,15 +189,15 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """ Action performed when the restore button is clicked.
         """
         subPath = self.path[0:len(self.path)-1]
-        dataStruct = self.extractDataStructure(self.originalData, subPath)
+        dataStruct = extractDataStructure(self.originalData, subPath)
         self.textField.setText(str(dataStruct[self.key]))
 
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
         subPath = self.path[0:len(self.path)-1]
-        dataStruct = dataStruct = self.extractDataStructure(self.data, subPath)
-        originalDataStruct = self.extractDataStructure(self.originalData, subPath)
+        dataStruct = dataStruct = extractDataStructure(self.data, subPath)
+        originalDataStruct = extractDataStructure(self.originalData, subPath)
         try:
             oldType = type(originalDataStruct[self.key])
             dataStruct[self.key] = oldType(self.textField.toPlainText())
@@ -437,10 +433,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         """
         item = self.selectedItems()[0]
         path = self.getTreePath(item)
-        originalDataStruct = self.roxxorEditorJSON.extractDataStructure(
+        originalDataStruct = extractDataStructure(
                                     self.roxxorEditorJSON.originalData, path)
-        dataStruct = self.roxxorEditorJSON.extractDataStructure(
-                                    self.roxxorEditorJSON.data, path)
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
             index, ok = askForIndex(0, len(dataStruct))
             if ok:
@@ -463,10 +458,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         """
         item = self.selectedItems()[0]
         path = self.getTreePath(item)
-        originalDataStruct = self.roxxorEditorJSON.extractDataStructure(
+        originalDataStruct = extractDataStructure(
                                     self.roxxorEditorJSON.originalData, path)
-        dataStruct = self.roxxorEditorJSON.extractDataStructure(
-                                    self.roxxorEditorJSON.data, path)
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
             index, ok = askForIndex(0, len(dataStruct))
             if ok:
@@ -486,10 +480,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         """
         item = self.selectedItems()[0]
         path = self.getTreePath(item)
-        originalDataStruct = self.roxxorEditorJSON.extractDataStructure(
+        originalDataStruct = extractDataStructure(
                                     self.roxxorEditorJSON.originalData, path)
-        dataStruct = self.roxxorEditorJSON.extractDataStructure(
-                                    self.roxxorEditorJSON.data, path)
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
             index, ok = askForIndex(0, len(dataStruct))
             if ok:
@@ -510,8 +503,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             path = self.getTreePath(item)
             endPath = path[len(path)-1]
             path = path[0:len(path)-1]
-            dataStruct = self.roxxorEditorJSON.extractDataStructure(
-                                    self.roxxorEditorJSON.data,path)
+            dataStruct = extractDataStructure(self.roxxorEditorJSON.data,path)
             if type(endPath) == int:
                 dataStruct.pop(endPath)
             else:
