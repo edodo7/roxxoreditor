@@ -1,47 +1,41 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """ This script contains the core of the Roxxor Editor.
 """
 
-import imp
-import sys
+# System
 import os.path
+
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from dialog import aboutDialog, modulesDialog
-
-# Dynamic import of modules
-modulesDict = {}
-modulesPath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                          '..',
-                                          'modules')
-moduleFiles = os.listdir(modulesPath)
-
-for moduleFile in moduleFiles:
-    if moduleFile.endswith('tools.py'):
-        moduleName = moduleFile[:-3]
-        modulePath = os.path.join(modulesPath, moduleFile)
-
-        module = imp.load_source(moduleName, modulePath)
-        module.registerModule(modulesDict)
+# Core
+from core.dialog import aboutDialog
+from core.dialog import modulesDialog
 
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
     """ The main window of the editor.
     """
-    def __init__(self):
+    def __init__(self, modulesDict):
         """ Initialization of the object.
         """
         QtGui.QMainWindow.__init__(self)
         self.setWindowTitle("Roxxor Editor")
-        self.activeWidget = '.json'
-        self.roxxorWidget = modulesDict[self.activeWidget]()
-        self.setCentralWidget(self.roxxorWidget)
 
         self.fileName = ""
+        self.modulesDict = modulesDict
+
+        self.activeWidget = '.json'
+        self.roxxorWidget = self.modulesDict[self.activeWidget]()
+        self.setCentralWidget(self.roxxorWidget)
 
         # Actions
+        newAction = QtGui.QAction('New File', self)
+        newAction.setShortcut('Ctrl+N')
+        newAction.setStatusTip('Create a new file')
+        newAction.triggered.connect(self.newFile)
+
         openAction = QtGui.QAction('Open', self)
         openAction.setShortcut('Ctrl+O')
         openAction.setStatusTip('Open a file')
@@ -62,6 +56,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
 
+        # findAction = QtGui.QAction('Find...', self)
+        # findAction.setShortcut('Ctrl+F')
+        # findAction.setStatusTip('Search key/value')
+        # findAction.triggered.connect(self.findKeyValue)
+
         aboutAction = QtGui.QAction('About', self)
         aboutAction.setShortcut('F1')
         aboutAction.setStatusTip('Application informations')
@@ -71,11 +70,15 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         menubar = self.menuBar()
 
         fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(newAction)
         fileMenu.addAction(openAction)
         fileMenu.addAction(saveAction)
         fileMenu.addAction(saveAsAction)
         fileMenu.addSeparator()
         fileMenu.addAction(exitAction)
+
+        # fileMenu = menubar.addMenu('Fi&nd')
+        # fileMenu.addAction(findAction)
 
         fileMenu = menubar.addMenu('&Help')
         fileMenu.addAction(aboutAction)
@@ -85,6 +88,33 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.move(QtGui.QApplication.desktop().screen().rect().center()-
                   self.rect().center())
 
+        self.displayStatus('Roxxor Editor ready!', 3)
+
+
+    def displayStatus(self, status, delay=5):
+        """ Display the specified message status in the status bar
+            for 'delay' seconds.
+
+        Keyword arguments:
+            status -- The message to display in the status bar.
+            delay  -- The number of seconds the message must be displayed.
+        """
+        self.statusBar().showMessage(status, delay * 1000)
+
+
+    def newFile(self):
+        """ The action performed when the button "New File" in the tool bar
+            is clicked.
+        """
+        ext = self.updateModule()
+
+        if ext != None:
+            # Reset Data
+            self.roxxorWidget.resetData()
+            self.displayStatus('New file opened.')
+        else:
+            self.displayStatus('New file cancelled.')
+
 
     def openFile(self):
         """ The action performed when the button "Open" in the tool bar
@@ -92,23 +122,39 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """
         self.fileName = QtGui.QFileDialog.getOpenFileName(self, 'Open a file',
                         str(os.path.expanduser("~")))
-        if self.fileName != "":
-            # Actualize widget following the extension of the file to use
-            ext = os.path.splitext(self.fileName)[1]
-            modulesList = list(modulesDict.keys())
 
-            if ext not in modulesList:
-                ext, proceed = modulesDialog(modulesList)
-                if not proceed:  # In case of a cancel
-                    return
+        base, ext = os.path.splitext(self.fileName)
 
-            if ext != self.activeWidget:
-                self.activeWidget = ext
-                self.roxxorWidget = modulesDict[self.activeWidget]()
-                self.setCentralWidget(self.roxxorWidget)
+        if base != "":
+            ext = self.updateModule(ext)
 
+        if ext != None and self.fileName != "":
             # Read and Set datas
             self.roxxorWidget.setData(self.fileName)
+            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
+                               '\' loaded with the module \'' +
+                               self.activeWidget[1:].upper() + '\'.')
+        else:
+            self.displayStatus('Open file cancelled.')
+
+
+    def updateModule(self, ext=""):
+        """ Update the module to use, may ask the user the module to use.
+
+        Keyword arguments:
+            ext -- The extension of the selected file.
+        """
+        # Extension not known by Roxxor; ask the user which module to use
+        if ext not in self.modulesDict.keys():
+            ext = modulesDialog(self.modulesDict.keys())
+
+        # Module has changed; load the new one
+        if ext != None and ext != self.activeWidget:
+            self.activeWidget = ext.lower()
+            self.roxxorWidget = self.modulesDict[self.activeWidget]()
+            self.setCentralWidget(self.roxxorWidget)
+
+        return ext
 
 
     def saveFile(self):
@@ -120,6 +166,8 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
 
         if self.fileName != "":
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
+            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
+                               '\' saved.')
 
 
     def saveAsFile(self):
@@ -130,13 +178,5 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
 
         if self.fileName != "":
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
-
-
-def main():
-    app = QtGui.QApplication(sys.argv)
-    roxxor = RoxxorEditorWindow()
-    roxxor.show()
-    sys.exit(app.exec_())
-
-if __name__ == "__main__":
-    main()
+            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
+                               '\' saved.')

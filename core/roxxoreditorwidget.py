@@ -1,10 +1,10 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from dialog import errorDialog
+from core.dialog import errorDialog
 
 class RoxxorEditorWidget(QtGui.QWidget):
 

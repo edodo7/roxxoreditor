@@ -1,15 +1,16 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """ This module contains stuff concerning the popups, dialog, ... """
 
+# System
 from PyQt4 import QtGui
 
 def aboutDialog():
     """ Create and display the about dialog about Roxxor Editor.
     """
-    aboutTitle = 'About Roxxor Editor'
-    aboutContent = 'The awesome structured files editor.\n\n'
-    aboutContent += 'By Julien Delplanque and Alexandre Devaux'
+    aboutTitle = 'About RoxxoR Editor\n===================\n'
+    aboutContent = 'The awesome structured files editor,\n'
+    aboutContent += 'by Julien Delplanque and Alexandre Devaux.'
 
     QtGui.QMessageBox.information(None, aboutTitle, aboutContent)
 
@@ -31,7 +32,10 @@ def modulesDialog(modulesList):
         modulesList -- The list of modules name.
     """
     modulesList = list(map(lambda moduleExt: moduleExt[1:].upper(), modulesList))
-    return QtGui.QInputDialog.getItem(None, 'Module selecter',
+    modulesList.sort()
+    ext, proceed = QtGui.QInputDialog.getItem(None, 'Module selecter',
                                'The extension of the file isn\'t known by ' +
                                'Roxxor Editor.\nChoose the module to use ' +
                                'with the file :', modulesList, editable=False)
+    if proceed:
+        return '.' + ext.lower()
