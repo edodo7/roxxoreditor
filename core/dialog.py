@@ -1,7 +1,8 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """ This module contains stuff concerning the popups, dialog, ... """
 
+# System
 from PyQt4 import QtGui
 
 def aboutDialog():
