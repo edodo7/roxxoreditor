@@ -1,45 +1,34 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """ This script contains the core of the Roxxor Editor.
 """
 
-import imp
-import sys
+# System
 import os.path
+
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from dialog import aboutDialog, modulesDialog
-
-# Dynamic import of modules
-modulesDict = {}
-modulesPath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                          '..',
-                                          'modules')
-moduleFiles = os.listdir(modulesPath)
-
-for moduleFile in moduleFiles:
-    if moduleFile.endswith('tools.py'):
-        moduleName = moduleFile[:-3]
-        modulePath = os.path.join(modulesPath, moduleFile)
-
-        module = imp.load_source(moduleName, modulePath)
-        module.registerModule(modulesDict)
+# Core
+from core.dialog import aboutDialog
+from core.dialog import modulesDialog
 
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
     """ The main window of the editor.
     """
-    def __init__(self):
+    def __init__(self, modulesDict):
         """ Initialization of the object.
         """
         QtGui.QMainWindow.__init__(self)
         self.setWindowTitle("Roxxor Editor")
-        self.activeWidget = '.json'
-        self.roxxorWidget = modulesDict[self.activeWidget]()
-        self.setCentralWidget(self.roxxorWidget)
 
         self.fileName = ""
+        self.modulesDict = modulesDict
+
+        self.activeWidget = '.json'
+        self.roxxorWidget = self.modulesDict[self.activeWidget]()
+        self.setCentralWidget(self.roxxorWidget)
 
         # Actions
         openAction = QtGui.QAction('Open', self)
@@ -128,13 +117,13 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             ext -- The extension of the selected file.
         """
         # Extension not known by Roxxor; ask the user which module to use
-        if ext not in modulesDict.keys():
-            ext = modulesDialog(modulesDict.keys())
+        if ext not in self.modulesDict.keys():
+            ext = modulesDialog(self.modulesDict.keys())
 
         # Module has changed; load the new one
         if ext != None and ext != self.activeWidget:
             self.activeWidget = ext.lower()
-            self.roxxorWidget = modulesDict[self.activeWidget]()
+            self.roxxorWidget = self.modulesDict[self.activeWidget]()
             self.setCentralWidget(self.roxxorWidget)
 
         return ext
@@ -163,13 +152,3 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
             self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
                                '\' saved.')
-
-
-def main():
-    app = QtGui.QApplication(sys.argv)
-    roxxor = RoxxorEditorWindow()
-    roxxor.show()
-    sys.exit(app.exec_())
-
-if __name__ == "__main__":
-    main()

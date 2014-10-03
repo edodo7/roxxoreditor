@@ -1,7 +1,8 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from roxxoreditorwidget import *
+# Core
+from core.roxxoreditorwidget import *
 
 def registerModule(modulesDict):
     modulesDict['.xml'] = RoxxorEditorXML

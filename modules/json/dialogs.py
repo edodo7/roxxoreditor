@@ -1,6 +1,7 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+# System
 from PyQt4 import QtGui
 
 def askForKey():

@@ -1,13 +1,21 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+# System
 import json
 import copy
-from roxxoreditorwidget import *
-from dialog import *
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+# Core
+from core.dialog import *
+from core.roxxoreditorwidget import *
+# Modules JSON
+from modules.json.displayerwidget import TreeWidgetJSON
+from modules.json.displayerwidget import TreeWidgetItemJSON
+from modules.json.tools import extractDataStructure
+
+# CONSTANTS
 KEY_LABEL_DEFAULT = "Key: "
 RESTORE_BUTTON_DEFAULT = "Restore original value"
 

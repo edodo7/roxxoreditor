@@ -1,8 +1,15 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+# System
+import copy
 
 from PyQt4 import QtCore
 from PyQt4 import QtGui
+
+# Modules JSON
+from modules.json.dialogs import *
+from modules.json.tools import extractDataStructure
 
 class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
     """ A tree widget item specialised for displaying JSON data.
@@ -35,7 +42,7 @@ class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
 class TreeWidgetJSON(QtGui.QTreeWidget):
     """ A tree widget specialised for displaying a JSON.
     """
-    def __init__(self, roxxorEditorJSONwidget: RoxxorEditorJSON):
+    def __init__(self, roxxorEditorJSONwidget):
         """ Initialization of the object.
 
         Keyword arguments:
