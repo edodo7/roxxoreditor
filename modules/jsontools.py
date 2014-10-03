@@ -507,18 +507,14 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         if isConfirmed("Are you sure to delete this item?"):
             item = self.selectedItems()[0]
             path = self.getTreePath(item)
-            dataStruct = self.roxxorEditorJSON.data
-            for i in range(len(path)-1):
-                try:
-                    j = int(path[i])
-                    dataStruct = dataStruct[j]
-                except ValueError:
-                    dataStruct = dataStruct[path[i]]
-            try:
-                j = int(path[len(path)-1])
-                dataStruct.pop(j)
-            except ValueError:
-                del(dataStruct[path[len(path)-1]])
+            endPath = path[len(path)-1]
+            path = path[0:len(path)-1]
+            dataStruct = self.roxxorEditorJSON.extractDataStructure(
+                                    self.roxxorEditorJSON.data,path)
+            if type(endPath) == int:
+                dataStruct.pop(endPath)
+            else:
+                del(dataStruct[endPath])
             self.roxxorEditorJSON.originalData = copy.deepcopy(self.roxxorEditorJSON.data)
             self.recreateTreeView(self.roxxorEditorJSON.data)
             self.roxxorEditorJSON.key = None
