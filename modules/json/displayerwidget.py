@@ -171,6 +171,8 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         menu = QtGui.QMenu(self)
         treeItem = self.selectedItems()[0]
         if treeItem.data != "root":
+            if treeItem.parent().dataType == dict:
+                menu.addAction(editKey)
             if treeItem.dataType == None:
                 menu.addAction(remove)
             else:
@@ -178,13 +180,11 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
-                    menu.addAction(editKey)
                     menu.addAction(remove)
                 elif treeItem.dataType == dict:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
-                    menu.addAction(editKey)
                     menu.addAction(remove)
         else:
             if treeItem.childCount() == 0 and treeItem.dataType == None:
@@ -309,4 +309,23 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     def editKey(self):
         """ Edit the key selected by the user.
         """
-        pass
+        item = self.selectedItems()[0]
+        path = self.getTreePath(item)
+        subPath = path[0:len(path)-1]
+        index = path[len(path)-1]
+        originalDataStruct = extractDataStructure(self.roxxorEditorJSON.originalData, subPath)
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, subPath)
+        newKey, ok = askForKey()
+        if ok:
+            originalData = originalDataStruct[index]
+            data = dataStruct[index]
+            del(originalDataStruct[index])
+            del(dataStruct[index])
+            originalDataStruct[newKey] = originalData
+            dataStruct[newKey] = data
+            self.recreateTreeView(self.roxxorEditorJSON.data)
+            self.roxxorEditorJSON.key = None
+            self.roxxorEditorJSON.keyLabel.hide()
+            self.roxxorEditorJSON.textField.hide()
+            self.roxxorEditorJSON.valueLabel.hide()
+            self.roxxorEditorJSON.modificationsButton.hide()
