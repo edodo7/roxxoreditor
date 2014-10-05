@@ -55,7 +55,6 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         self.roxxorEditorJSON = roxxorEditorJSONwidget
         # Root item
         self.rootItem = TreeWidgetItemJSON("root")
-        self.insertTopLevelItem(0, self.rootItem)
         # Manage custom context menu
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.connect(self,
