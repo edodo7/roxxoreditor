@@ -65,7 +65,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         aboutAction = QtGui.QAction('About', self)
         aboutAction.setShortcut('F1')
         aboutAction.setStatusTip('Application informations')
-        aboutAction.triggered.connect(aboutDialog)
+        aboutAction.triggered.connect(self.displayAboutDialog)
 
         # Menu Bar
         menubar = self.menuBar()
@@ -91,6 +91,10 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
 
         self.displayStatus('Roxxor Editor ready!', 3)
 
+    def displayAboutDialog(self):
+        """ Display the about dialog.
+        """
+        aboutDialog(self)
 
     def displayStatus(self, status, delay=5):
         """ Display the specified message status in the status bar
@@ -147,7 +151,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """
         # Extension not known by Roxxor; ask the user which module to use
         if ext not in self.modulesDict.keys():
-            ext = modulesDialog(self.modulesDict.keys())
+            ext = modulesDialog(self, self.modulesDict.keys())
 
         # Module has changed; load the new one
         if ext != None and ext != self.activeWidget:

@@ -212,7 +212,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                         dataStruct[self.key] = False
 
         except ValueError:
-            errorDialog("Wrong entry!")
+            errorDialog(self, "Wrong entry!")
 
     def resetData(self):
         """ Reset the data to create a new empty file.

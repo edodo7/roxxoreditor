@@ -24,7 +24,7 @@ def askForData(parent: QtGui.QWidget):
         try:
             data = dataType(data)
         except ValueError:
-            errorDialog("The data typed does not correspond to the type choosen.")
+            errorDialog(parent, "The data typed does not correspond to the type choosen.")
             ok = False
     return data, ok
 
