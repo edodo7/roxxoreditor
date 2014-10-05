@@ -7,6 +7,9 @@ import copy
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+# Core
+from core.dialog import *
+
 # Modules JSON
 from modules.json.dialogs import *
 from modules.json.tools import extractDataStructure
@@ -218,14 +221,17 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 if ok:
                     originalDataStruct.insert(index, data)
                     dataStruct.insert(index, data)
+                    self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
             keyName, ok = askForKey()
-            if ok:
+            if ok and keyName != "":
                 data, ok = askForData()
                 if ok:
                     originalDataStruct[keyName] = data
                     dataStruct[keyName] = data
-        self.recreateTreeView(self.roxxorEditorJSON.data)
+                    self.recreateTreeView(self.roxxorEditorJSON.data)
+            elif ok and keyName == "":
+                errorDialog("A key can not be empty.")
 
     def addDictionary(self):
         """ Add a dictionary in the data structure selected by the user in
@@ -241,12 +247,15 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             if ok:
                 originalDataStruct.insert(index, dict())
                 dataStruct.insert(index, dict())
+                self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
             keyName, ok = askForKey()
-            if ok:
+            if ok and keyName != "":
                 originalDataStruct[keyName] = dict()
                 dataStruct[keyName] = dict()
-        self.recreateTreeView(self.roxxorEditorJSON.data)
+                self.recreateTreeView(self.roxxorEditorJSON.data)
+            elif ok and keyName == "":
+                errorDialog("A key can not be empty.")
 
 
     def addList(self):
@@ -263,12 +272,15 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             if ok:
                 originalDataStruct.insert(index, list())
                 dataStruct.insert(index, list())
+                self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
             keyName, ok = askForKey()
-            if ok:
+            if ok and keyName != "":
                 originalDataStruct[keyName] = list()
                 dataStruct[keyName] = list()
-        self.recreateTreeView(self.roxxorEditorJSON.data)
+                self.recreateTreeView(self.roxxorEditorJSON.data)
+            elif ok and keyName == "":
+                errorDialog("A key can not be empty.")
 
     def remove(self):
         """ Remove the data represented by the item user clicked on.
@@ -315,7 +327,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         originalDataStruct = extractDataStructure(self.roxxorEditorJSON.originalData, subPath)
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, subPath)
         newKey, ok = askForKey()
-        if ok:
+        if ok and newKey != "":
             originalData = originalDataStruct[index]
             data = dataStruct[index]
             del(originalDataStruct[index])
@@ -328,3 +340,5 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             self.roxxorEditorJSON.textField.hide()
             self.roxxorEditorJSON.valueLabel.hide()
             self.roxxorEditorJSON.modificationsButton.hide()
+        elif ok and newKey == "":
+            errorDialog("A key can not be empty.")
