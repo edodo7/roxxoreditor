@@ -5,6 +5,8 @@
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
+from core.dialog import *
+
 def askForKey():
     """ Create and display a dialog that ask to the user the key name.
     """
