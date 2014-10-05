@@ -3,6 +3,7 @@
 
 # System
 from PyQt4 import QtGui
+from PyQt4 import QtCore
 
 def askForKey():
     """ Create and display a dialog that ask to the user the key name.
@@ -63,18 +64,44 @@ class DataDialog(QtGui.QMessageBox):
         self.setText("Enter the data:")
         self.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
         self.setDefaultButton(QtGui.QMessageBox.Cancel)
+        # Input widget
+        self.stringWidget = QtGui.QTextEdit()
+        self.booleanWidget = QtGui.QComboBox(self)
+        self.booleanWidget.setMaximumSize(QtCore.QSize(150,40))
+        self.booleanWidget.addItem("True")
+        self.booleanWidget.addItem("False")
+        self.noneWidget = QtGui.QLabel("None")
+        self.noneWidget.setMaximumSize(QtCore.QSize(150,40))
+        self.integerWidget = QtGui.QLineEdit()
+        self.integerWidget.setMaximumSize(QtCore.QSize(150,40))
+        self.integerWidget.setValidator(QtGui.QIntValidator(self))
+        self.floatWidget = QtGui.QLineEdit()
+        self.floatWidget.setMaximumSize(QtCore.QSize(150,40))
+        self.floatWidget.setValidator(QtGui.QDoubleValidator(self))
+        # Input widget layout
+        self.inputWidgetLayout = QtGui.QStackedLayout()
+        self.inputWidgetLayout.addWidget(self.stringWidget)
+        self.inputWidgetLayout.addWidget(self.booleanWidget)
+        self.inputWidgetLayout.addWidget(self.noneWidget)
+        self.inputWidgetLayout.addWidget(self.integerWidget)
+        self.inputWidgetLayout.addWidget(self.floatWidget)
         # Radio buttons
         self.radioButtonNull = QtGui.QRadioButton()
         self.radioButtonNull.setText("null")
+        self.radioButtonNull.toggled.connect(self.radioNullClicked)
         self.radioButtonInteger = QtGui.QRadioButton()
         self.radioButtonInteger.setText("Integer")
+        self.radioButtonInteger.toggled.connect(self.radioIntegerClicked)
         self.radioButtonFloat = QtGui.QRadioButton()
         self.radioButtonFloat.setText("Float")
+        self.radioButtonFloat.toggled.connect(self.radioFloatClicked)
         self.radioButtonString = QtGui.QRadioButton()
         self.radioButtonString.setText("String")
+        self.radioButtonString.toggled.connect(self.radioStringClicked)
         self.radioButtonString.setChecked(True)
         self.radioButtonBoolean = QtGui.QRadioButton()
         self.radioButtonBoolean.setText("Boolean")
+        self.radioButtonBoolean.toggled.connect(self.radioBooleanClicked)
         # Button group
         buttonGroup = QtGui.QButtonGroup()
         buttonGroup.addButton(self.radioButtonNull, 1)
@@ -82,9 +109,6 @@ class DataDialog(QtGui.QMessageBox):
         buttonGroup.addButton(self.radioButtonFloat, 3)
         buttonGroup.addButton(self.radioButtonString, 4)
         buttonGroup.addButton(self.radioButtonBoolean, 5)
-        # Text field
-        self.textField = QtGui.QTextEdit()
-
         # Layout management
         layout = self.layout()
         vlayout = QtGui.QVBoxLayout()
@@ -94,7 +118,33 @@ class DataDialog(QtGui.QMessageBox):
         vlayout.addWidget(self.radioButtonString)
         vlayout.addWidget(self.radioButtonBoolean)
         layout.addLayout(vlayout, 1, 2)
-        layout.addWidget(self.textField, 1, 1)
+        layout.addLayout(self.inputWidgetLayout, 1, 1)
+
+    def radioNullClicked(self):
+        """
+        """
+        self.inputWidgetLayout.setCurrentWidget(self.noneWidget)
+
+    def radioIntegerClicked(self):
+        """
+        """
+        self.inputWidgetLayout.setCurrentWidget(self.integerWidget)
+
+    def radioFloatClicked(self):
+        """
+        """
+        self.inputWidgetLayout.setCurrentWidget(self.floatWidget)
+
+    def radioStringClicked(self):
+        """
+        """
+        self.inputWidgetLayout.setCurrentWidget(self.stringWidget)
+
+    def radioBooleanClicked(self):
+        """
+        """
+        self.inputWidgetLayout.setCurrentWidget(self.booleanWidget)
+
 
     def typeChecked(self):
         """ Return the python class that represent the type choosed by
@@ -111,6 +161,21 @@ class DataDialog(QtGui.QMessageBox):
         else:
             return bool
 
+    def valueEntered(self):
+        """
+        """
+        widget = self.inputWidgetLayout.currentWidget()
+        if self.radioButtonNull.isChecked():
+            return None
+        elif self.radioButtonInteger.isChecked():
+            return widget.text()
+        elif self.radioButtonFloat.isChecked():
+            return widget.text()
+        elif self.radioButtonString.isChecked():
+            return widget.toPlainText()
+        else:
+            return widget.currentText()
+
     def exec_(self, *args, **kwargs):
         """ Override the exec_ method return a boolean, the class that
             represent the type checked or None if null were checked and
@@ -118,4 +183,4 @@ class DataDialog(QtGui.QMessageBox):
             if the button "Ok" were pressed else it return False.
         """
         result = QtGui.QMessageBox.exec_(self, *args, **kwargs)
-        return result == QtGui.QMessageBox.Ok, self.typeChecked(), self.textField.toPlainText()
+        return result == QtGui.QMessageBox.Ok, self.typeChecked(), self.valueEntered()
