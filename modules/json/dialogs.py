@@ -123,27 +123,27 @@ class DataDialog(QtGui.QMessageBox):
         layout.addLayout(self.inputWidgetLayout, 1, 1)
 
     def radioNullClicked(self):
-        """
+        """ Set the self.noneWidget on top of the QStackedLayout's stack.
         """
         self.inputWidgetLayout.setCurrentWidget(self.noneWidget)
 
     def radioIntegerClicked(self):
-        """
+        """ Set the self.integerWidget on top of the QStackedLayout's stack.
         """
         self.inputWidgetLayout.setCurrentWidget(self.integerWidget)
 
     def radioFloatClicked(self):
-        """
+        """ Set the self.floatWidget on top of the QStackedLayout's stack.
         """
         self.inputWidgetLayout.setCurrentWidget(self.floatWidget)
 
     def radioStringClicked(self):
-        """
+        """ Set the self.stringWidget on top of the QStackedLayout's stack.
         """
         self.inputWidgetLayout.setCurrentWidget(self.stringWidget)
 
     def radioBooleanClicked(self):
-        """
+        """ Set the self.booleanWidget on top of the QStackedLayout's stack.
         """
         self.inputWidgetLayout.setCurrentWidget(self.booleanWidget)
 
@@ -164,7 +164,8 @@ class DataDialog(QtGui.QMessageBox):
             return bool
 
     def valueEntered(self):
-        """
+        """ Return the value entered by the user according to widget
+            corresponding to the type choosen by the user.
         """
         widget = self.inputWidgetLayout.currentWidget()
         if self.radioButtonNull.isChecked():
