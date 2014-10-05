@@ -12,6 +12,7 @@ from PyQt4 import QtGui
 # Core
 from core.dialog import aboutDialog
 from core.dialog import modulesDialog
+from core.dialog import saveDialog
 
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
@@ -186,3 +187,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
             self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
                                '\' saved.')
+
+    def closeEvent(self, event):
+        """ Overload mother's method to ask if the user want to save before
+            closing the app.
+        """
+        if self.roxxorWidget.data != None and saveDialog(self):
+            self.saveFile()
+        event.accept()

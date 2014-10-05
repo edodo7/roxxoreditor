@@ -29,9 +29,9 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """ Initialization of the object.
         """
         # This variable is the backup of the data
-        self.originalData = {}
+        self.originalData = None
         # This variable is the data user work with
-        self.data = {}
+        self.data = None
 
         self.key = None
         self.path = []

@@ -39,3 +39,13 @@ def modulesDialog(modulesList):
                                'with the file :', modulesList, editable=False)
     if proceed:
         return '.' + ext.lower()
+
+def saveDialog(parent):
+    reply = QtGui.QMessageBox.question(parent, 'Save before quitting?',
+                                    "Do you want to save before quitting?",
+                                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                                    QtGui.QMessageBox.Yes)
+    if reply == QtGui.QMessageBox.Yes:
+        return True
+    else:
+        return False
