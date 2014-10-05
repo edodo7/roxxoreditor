@@ -165,6 +165,9 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file")
 
         if self.fileName != "":
+            # Save the value that is being edited
+            self.roxxorWidget.saveValue()
+            # Write in the file
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
             self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
                                '\' saved.')
@@ -177,6 +180,9 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file as...")
 
         if self.fileName != "":
+            # Save the value that is being edited
+            self.roxxorWidget.saveValue()
+            # Write in the file
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
             self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
                                '\' saved.')
