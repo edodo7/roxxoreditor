@@ -7,17 +7,17 @@ from PyQt4 import QtCore
 
 from core.dialog import *
 
-def askForKey():
+def askForKey(parent: QtGui.QWidget):
     """ Create and display a dialog that ask to the user the key name.
     """
-    key, ok = QtGui.QInputDialog.getText(None, 'Key name',
+    key, ok = QtGui.QInputDialog.getText(parent, 'Key name',
             'Enter the key name:')
     return key, ok
 
-def askForData():
+def askForData(parent: QtGui.QWidget):
     """ Create and display a dialog that ask to the user the data.
     """
-    ok, dataType, data = DataDialog().exec_()
+    ok, dataType, data = DataDialog(parent).exec_()
     if dataType == None:
         data = None
     else:
@@ -28,25 +28,25 @@ def askForData():
             ok = False
     return data, ok
 
-def askForIndex(minimum: int, maximum: int):
+def askForIndex(parent: QtGui.QWidget, minimum: int, maximum: int):
     """ Create and display a dialog that ask to the user an index.
 
     Keyword arguments:
         minimum -- Lower boundary of the index choice.
         maximum -- Higher boundary of the index choice.
     """
-    index, ok = QtGui.QInputDialog.getInteger(None, 'Index',
+    index, ok = QtGui.QInputDialog.getInteger(parent, 'Index',
             'Enter the index:', value=maximum, min=minimum, max=maximum)
     return index, ok
 
-def isConfirmed(description: str):
+def isConfirmed(parent: QtGui.QWidget, description: str):
     """ Create and display a dialog that ask to the user if he confirm
         the action described in the string in parameter.
 
     Keyword arguments:
         description -- The description of what have to be confirmed.
     """
-    reply = QtGui.QMessageBox.question(None, 'Confirmation',
+    reply = QtGui.QMessageBox.question(parent, 'Confirmation',
                             description,
                             QtGui.QMessageBox.Yes |
                             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
@@ -58,7 +58,7 @@ class DataDialog(QtGui.QMessageBox):
     """ This class is a dialog for asking the user a data in a text text field
         and its type.
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent: QtGui.QWidget):
         """ Initialization of the object.
         """
         QtGui.QMessageBox.__init__(self, parent)

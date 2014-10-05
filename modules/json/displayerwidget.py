@@ -215,17 +215,17 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                                     self.roxxorEditorJSON.originalData, path)
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index, ok = askForIndex(0, len(dataStruct))
+            index, ok = askForIndex(self, 0, len(dataStruct))
             if ok:
-                data, ok = askForData()
+                data, ok = askForData(self)
                 if ok:
                     originalDataStruct.insert(index, data)
                     dataStruct.insert(index, data)
                     self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
-            keyName, ok = askForKey()
+            keyName, ok = askForKey(self)
             if ok and keyName != "":
-                data, ok = askForData()
+                data, ok = askForData(self)
                 if ok:
                     originalDataStruct[keyName] = data
                     dataStruct[keyName] = data
@@ -243,13 +243,13 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                                     self.roxxorEditorJSON.originalData, path)
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index, ok = askForIndex(0, len(dataStruct))
+            index, ok = askForIndex(self, 0, len(dataStruct))
             if ok:
                 originalDataStruct.insert(index, dict())
                 dataStruct.insert(index, dict())
                 self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
-            keyName, ok = askForKey()
+            keyName, ok = askForKey(self)
             if ok and keyName != "":
                 originalDataStruct[keyName] = dict()
                 dataStruct[keyName] = dict()
@@ -268,13 +268,13 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                                     self.roxxorEditorJSON.originalData, path)
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index, ok = askForIndex(0, len(dataStruct))
+            index, ok = askForIndex(self, 0, len(dataStruct))
             if ok:
                 originalDataStruct.insert(index, list())
                 dataStruct.insert(index, list())
                 self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
-            keyName, ok = askForKey()
+            keyName, ok = askForKey(self)
             if ok and keyName != "":
                 originalDataStruct[keyName] = list()
                 dataStruct[keyName] = list()
@@ -285,7 +285,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     def remove(self):
         """ Remove the data represented by the item user clicked on.
         """
-        if isConfirmed("Are you sure to delete this item?"):
+        if isConfirmed(self, "Are you sure to delete this item?"):
             item = self.selectedItems()[0]
             path = self.getTreePath(item)
             endPath = path[len(path)-1]
@@ -326,7 +326,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         index = path[len(path)-1]
         originalDataStruct = extractDataStructure(self.roxxorEditorJSON.originalData, subPath)
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, subPath)
-        newKey, ok = askForKey()
+        newKey, ok = askForKey(self)
         if ok and newKey != "":
             originalData = originalDataStruct[index]
             data = dataStruct[index]
