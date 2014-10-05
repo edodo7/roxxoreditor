@@ -299,7 +299,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             self.recreateTreeView(self.roxxorEditorJSON.data)
             self.roxxorEditorJSON.key = None
             self.roxxorEditorJSON.keyLabel.hide()
-            self.roxxorEditorJSON.textField.hide()
+            self.roxxorEditorJSON.currentInputWidget().hide()
             self.roxxorEditorJSON.valueLabel.hide()
             self.roxxorEditorJSON.modificationsButton.hide()
 
@@ -337,7 +337,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             self.recreateTreeView(self.roxxorEditorJSON.data)
             self.roxxorEditorJSON.key = None
             self.roxxorEditorJSON.keyLabel.hide()
-            self.roxxorEditorJSON.textField.hide()
+            self.roxxorEditorJSON.currentInputWidget().hide()
             self.roxxorEditorJSON.valueLabel.hide()
             self.roxxorEditorJSON.modificationsButton.hide()
         elif ok and newKey == "":

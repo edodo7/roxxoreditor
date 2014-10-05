@@ -53,9 +53,28 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         self.valueLabel = QtGui.QLabel("Value:")
         self.valueLabel.hide()
 
-        # Text fields
-        self.textField = QtGui.QTextEdit()
-        self.textField.hide()
+        # Input widget
+        self.stringWidget = QtGui.QTextEdit()
+        self.booleanWidget = QtGui.QComboBox(self)
+        self.booleanWidget.setMaximumSize(QtCore.QSize(150,40))
+        self.booleanWidget.addItem("True")
+        self.booleanWidget.addItem("False")
+        self.noneWidget = QtGui.QLabel("None")
+        self.noneWidget.setMaximumSize(QtCore.QSize(150,40))
+        self.integerWidget = QtGui.QLineEdit()
+        self.integerWidget.setMaximumSize(QtCore.QSize(150,40))
+        self.integerWidget.setValidator(QtGui.QIntValidator(self))
+        self.floatWidget = QtGui.QLineEdit()
+        self.floatWidget.setMaximumSize(QtCore.QSize(150,40))
+        self.floatWidget.setValidator(QtGui.QDoubleValidator(self))
+        # Input widget layout
+        self.inputWidgetLayout = QtGui.QStackedLayout()
+        self.inputWidgetLayout.addWidget(self.stringWidget)
+        self.inputWidgetLayout.addWidget(self.booleanWidget)
+        self.inputWidgetLayout.addWidget(self.noneWidget)
+        self.inputWidgetLayout.addWidget(self.integerWidget)
+        self.inputWidgetLayout.addWidget(self.floatWidget)
+        self.inputWidgetLayout.currentWidget().hide()
 
         # Buttons
         self.modificationsButton = QtGui.QPushButton(RESTORE_BUTTON_DEFAULT)
@@ -74,7 +93,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         rightSubSubLayout = QtGui.QVBoxLayout()
         rightSubSubLayout.addLayout(topRightSubSubSubLayout)
         rightSubSubLayout.addWidget(self.valueLabel)
-        rightSubSubLayout.addWidget(self.textField)
+        rightSubSubLayout.addLayout(self.inputWidgetLayout)
         rightSubSubLayout.addWidget(self.modificationsButton)
 
         leftFrame = QtGui.QFrame()
@@ -91,6 +110,11 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         layout.addWidget(splitter)
 
         self.setLayout(layout)
+
+    def currentInputWidget(self):
+        """ Return the input widget currently shown to the user.
+        """
+        return self.inputWidgetLayout.currentWidget()
 
     def onClickItem(self, item: QtGui.QTreeWidgetItem, column: int):
         """ Action performed when an item in the QTreeWidget is clicked.
@@ -113,10 +137,23 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             self.key = self.path[len(self.path)-1]
             self.keyLabel.setText(KEY_LABEL_DEFAULT+str(self.key))
             self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path]))
-            self.textField.setText(str(dataSought))
+            if dataSought == None:
+                self.inputWidgetLayout.setCurrentWidget(self.noneWidget)
+            elif type(dataSought) == int:
+                self.integerWidget.setText(str(dataSought))
+                self.inputWidgetLayout.setCurrentWidget(self.integerWidget)
+            elif type(dataSought) == float:
+                self.floatWidget.setText(str(dataSought))
+                self.inputWidgetLayout.setCurrentWidget(self.floatWidget)
+            elif type(dataSought) == str:
+                self.stringWidget.setText(dataSought)
+                self.inputWidgetLayout.setCurrentWidget(self.stringWidget)
+            elif type(dataSought) == bool:
+                self.booleanWidget.setEditText(str(dataSought))
+                self.inputWidgetLayout.setCurrentWidget(self.booleanWidget)
             self.keyLabel.show()
             self.valueLabel.show()
-            self.textField.show()
+            self.inputWidgetLayout.currentWidget().show()
             self.modificationsButton.show()
         else:
             # Key Label
@@ -128,7 +165,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
 
             self.keyLabel.hide()
             self.valueLabel.hide()
-            self.textField.hide()
+            self.currentInputWidget().hide()
             self.modificationsButton.hide()
 
             self.key = None
@@ -138,7 +175,20 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """
         subPath = self.path[0:len(self.path)-1]
         dataStruct = extractDataStructure(self.originalData, subPath)
-        self.textField.setText(str(dataStruct[self.key]))
+        if dataStruct[self.key] == None:
+            self.inputWidgetLayout.setCurrentWidget(self.noneWidget)
+        elif type(dataStruct[self.key]) == int:
+            self.integerWidget.setText(str(dataStruct[self.key]))
+            self.inputWidgetLayout.setCurrentWidget(self.integerWidget)
+        elif type(dataStruct[self.key]) == float:
+            self.floatWidget.setText(str(dataStruct[self.key]))
+            self.inputWidgetLayout.setCurrentWidget(self.floatWidget)
+        elif type(dataStruct[self.key]) == str:
+            self.stringWidget.setText(dataStruct[self.key])
+            self.inputWidgetLayout.setCurrentWidget(self.stringWidget)
+        elif type(dataStruct[self.key]) == bool:
+            self.booleanWidget.setEditText(str(dataStruct[self.key]))
+            self.inputWidgetLayout.setCurrentWidget(self.booleanWidget)
 
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
@@ -147,10 +197,21 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         dataStruct = dataStruct = extractDataStructure(self.data, subPath)
         originalDataStruct = extractDataStructure(self.originalData, subPath)
         try:
-            oldType = type(originalDataStruct[self.key])
-            dataStruct[self.key] = oldType(self.textField.toPlainText())
+            if originalDataStruct[self.key] != None: # From now you can not edit the type.
+                oldType = type(originalDataStruct[self.key])
+                if oldType == int:
+                    dataStruct[self.key] = int(self.integerWidget.text())
+                elif oldType == float:
+                    dataStruct[self.key] = float(self.floatWidget.text())
+                elif oldType == str:
+                    dataStruct[self.key] = self.stringWidget.toPlainText()
+                elif oldType == bool:
+                    if self.booleanWidget.currentText() == "True":
+                        dataStruct[self.key] = True
+                    else:
+                        dataStruct[self.key] = False
+
         except ValueError:
-            self.textField.setText(str(originalDataStruct[self.key]))
             errorDialog("Wrong entry!")
 
     def resetData(self):
