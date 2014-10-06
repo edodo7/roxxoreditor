@@ -137,7 +137,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """ The action performed when the button "Open" in the tool bar
             is clicked.
         """
-        self.fileName = QtGui.QFileDialog.getOpenFileName(self, 'Open a file',
+        self.fileName = QtGui.QFileDialog.getOpenFileName(self, LANG["openActionTip"],
                         str(os.path.expanduser("~")))
 
         base, ext = os.path.splitext(self.fileName)
@@ -179,7 +179,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             is clicked.
         """
         if self.fileName == "":
-            self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file")
+            self.fileName = QtGui.QFileDialog.getSaveFileName(self, LANG["saveAction"])
 
         if self.fileName != "":
             # Save the value that is being edited
@@ -194,7 +194,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """ The action performed when the button "Save as..." in the menubar
             is clicked.
         """
-        self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file as...")
+        self.fileName = QtGui.QFileDialog.getSaveFileName(self, LANG["saveAsAction"])
 
         if self.fileName != "":
             # Save the value that is being edited

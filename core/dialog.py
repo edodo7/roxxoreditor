@@ -14,9 +14,8 @@ LANG = loadLangFile("core/lang.json")[loadRoxxorRc()["language"]]
 def aboutDialog(parent: QtGui.QWidget):
     """ Create and display the about dialog about Roxxor Editor.
     """
-    aboutTitle = 'About RoxxoR Editor\n===================\n'
-    aboutContent = 'The awesome structured files editor,\n'
-    aboutContent += 'by Julien Delplanque and Alexandre Devaux.'
+    aboutTitle = LANG["aboutDialogTitle"]
+    aboutContent = LANG["aboutDialogContent"]
 
     QtGui.QMessageBox.information(parent, aboutTitle, aboutContent)
 
@@ -26,7 +25,7 @@ def errorDialog(parent: QtGui.QWidget, errorContent: str):
     Keyword arguments:
         errorContent -- The str contening the error explanation to display.
     """
-    QtGui.QMessageBox.warning(parent, 'Error', errorContent)
+    QtGui.QMessageBox.warning(parent, LANG["errorDialogTitle"], errorContent)
 
 def modulesDialog(parent: QtGui.QWidget, modulesList: list):
     """ Create and display a combobox with all usables modules, to use with
@@ -39,18 +38,16 @@ def modulesDialog(parent: QtGui.QWidget, modulesList: list):
     """
     modulesList = list(map(lambda moduleExt: moduleExt[1:].upper(), modulesList))
     modulesList.sort()
-    ext, proceed = QtGui.QInputDialog.getItem(parent, 'Module selecter',
-                               'The extension of the file isn\'t known by ' +
-                               'Roxxor Editor.\nChoose the module to use ' +
-                               'with the file :', modulesList, editable=False)
+    ext, proceed = QtGui.QInputDialog.getItem(parent, LANG["modulesDialogTitle"],
+                               LANG["modulesDialogContent"], modulesList, editable=False)
     if proceed:
         return '.' + ext.lower()
 
 def saveDialog(parent: QtGui.QWidget):
     """
     """
-    reply = QtGui.QMessageBox.question(parent, 'Save before quitting?',
-                                    "Do you want to save before quitting?",
+    reply = QtGui.QMessageBox.question(parent, LANG["saveDialogTitle"],
+                                    LANG["saveDialogContent"],
                                     QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
                                     QtGui.QMessageBox.Yes)
     if reply == QtGui.QMessageBox.Yes:
@@ -61,6 +58,6 @@ def saveDialog(parent: QtGui.QWidget):
 def preferencesDialog(parent: QtGui.QWidget, languageList: list):
     """
     """
-    return QtGui.QInputDialog.getItem(parent, "Preferences",
-                                    "Choose your language:",
+    return QtGui.QInputDialog.getItem(parent, LANG["preferencesDialogTitle"],
+                                    LANG["preferencesDialogContent"],
                                     languageList, editable=False)
