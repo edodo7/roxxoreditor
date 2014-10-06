@@ -17,7 +17,7 @@ from core.dialog import preferencesDialog
 
 from core.tools import *
 
-LANG = loadLangFile("core/lang.json")
+LANG = loadLangFile("core/lang.json")[loadRoxxorRc()["language"]]
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
     """ The main window of the editor.
@@ -39,33 +39,33 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.preferencesDict = loadRoxxorRc()
 
         # Actions
-        newAction = QtGui.QAction('New File', self)
+        newAction = QtGui.QAction(LANG["newFileAction"], self)
         newAction.setShortcut('Ctrl+N')
-        newAction.setStatusTip('Create a new file')
+        newAction.setStatusTip(LANG["newFileActionTip"])
         newAction.triggered.connect(self.newFile)
 
-        openAction = QtGui.QAction('Open', self)
+        openAction = QtGui.QAction(LANG["openAction"], self)
         openAction.setShortcut('Ctrl+O')
-        openAction.setStatusTip('Open a file')
+        openAction.setStatusTip(LANG["openActionTip"])
         openAction.triggered.connect(self.openFile)
 
-        saveAction = QtGui.QAction('Save', self)
+        saveAction = QtGui.QAction(LANG["saveAction"], self)
         saveAction.setShortcut('Ctrl+S')
-        saveAction.setStatusTip('Save the modifications')
+        saveAction.setStatusTip(LANG["saveActionTip"])
         saveAction.triggered.connect(self.saveFile)
 
-        saveAsAction = QtGui.QAction('Save As...', self)
+        saveAsAction = QtGui.QAction(LANG["saveAsAction"], self)
         saveAsAction.setShortcut('Ctrl+Shift+S')
-        saveAsAction.setStatusTip('Save the modifications')
+        saveAsAction.setStatusTip(LANG["saveAsActionTip"])
         saveAsAction.triggered.connect(self.saveAsFile)
 
-        preferencesAction = QtGui.QAction('Preferences', self)
-        preferencesAction.setStatusTip('Edit preferences')
+        preferencesAction = QtGui.QAction(LANG["preferencesAction"], self)
+        preferencesAction.setStatusTip(LANG["preferencesActionTip"])
         preferencesAction.triggered.connect(self.preferences)
 
-        exitAction = QtGui.QAction('Exit', self)
+        exitAction = QtGui.QAction(LANG["exitAction"], self)
         exitAction.setShortcut('Ctrl+Q')
-        exitAction.setStatusTip('Exit application')
+        exitAction.setStatusTip(LANG["exitActionTip"])
         exitAction.triggered.connect(self.close)
 
         # findAction = QtGui.QAction('Find...', self)
@@ -73,15 +73,15 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         # findAction.setStatusTip('Search key/value')
         # findAction.triggered.connect(self.findKeyValue)
 
-        aboutAction = QtGui.QAction('About', self)
+        aboutAction = QtGui.QAction(LANG["aboutAction"], self)
         aboutAction.setShortcut('F1')
-        aboutAction.setStatusTip('Application informations')
+        aboutAction.setStatusTip(LANG["aboutActionTip"])
         aboutAction.triggered.connect(self.displayAboutDialog)
 
         # Menu Bar
         menubar = self.menuBar()
 
-        fileMenu = menubar.addMenu('&File')
+        fileMenu = menubar.addMenu(LANG["fileMenu"])
         fileMenu.addAction(newAction)
         fileMenu.addAction(openAction)
         fileMenu.addAction(saveAction)
@@ -93,7 +93,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         # fileMenu = menubar.addMenu('Fi&nd')
         # fileMenu.addAction(findAction)
 
-        fileMenu = menubar.addMenu('&Help')
+        fileMenu = menubar.addMenu(LANG["helpMenu"])
         fileMenu.addAction(aboutAction)
 
         self.resize(800, 400)
@@ -101,7 +101,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.move(QtGui.QApplication.desktop().screen().rect().center()-
                   self.rect().center())
 
-        self.displayStatus('Roxxor Editor ready!', 3)
+        self.displayStatus(LANG["readyStatus"], 3)
 
     def displayAboutDialog(self):
         """ Display the about dialog.
@@ -128,9 +128,9 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         if ext != None:
             # Reset Data
             self.roxxorWidget.resetData()
-            self.displayStatus('New file opened.')
+            self.displayStatus(LANG["newFileOpenedStatus"])
         else:
-            self.displayStatus('New file cancelled.')
+            self.displayStatus(LANG["newFileCancelledStatus"])
 
 
     def openFile(self):
@@ -148,11 +148,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         if ext != None and self.fileName != "":
             # Read and Set datas
             self.roxxorWidget.setData(self.fileName)
-            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
-                               '\' loaded with the module \'' +
+            self.displayStatus(LANG["file"]+'\'' + os.path.split(self.fileName)[1] +
+                               '\' '+LANG["loadedWithModule"]+' \'' +
                                self.activeWidget[1:].upper() + '\'.')
         else:
-            self.displayStatus('Open file cancelled.')
+            self.displayStatus(LANG["openFileCancelledStatus"])
 
 
     def updateModule(self, ext=""):
@@ -186,8 +186,8 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.roxxorWidget.saveValue()
             # Write in the file
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
-            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
-                               '\' saved.')
+            self.displayStatus(LANG["file"]+' \'' + os.path.split(self.fileName)[1] +
+                               '\' '+LANG["saved"]+'.')
 
 
     def saveAsFile(self):
@@ -201,8 +201,8 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.roxxorWidget.saveValue()
             # Write in the file
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
-            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
-                               '\' saved.')
+            self.displayStatus(LANG["file"]+' \'' + os.path.split(self.fileName)[1] +
+                               '\' '+LANG["saved"]+'.')
 
     def preferences(self):
         """ The action performed when the button "Preferences" in the menubar
