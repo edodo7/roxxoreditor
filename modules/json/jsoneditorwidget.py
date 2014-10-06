@@ -259,7 +259,8 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             filename -- The name of the file in which the contents will be write.
             content  -- The content to write into the file.
         """
-        str_dump = json.dumps(content, indent=4, separators=(',', ': '))
+        str_dump = json.dumps(content, indent=4, separators=(',', ': '),
+                            ensure_ascii=False, sort_keys=True)
 
         with open(filename, 'w') as foutput:
             foutput.writelines(str_dump)

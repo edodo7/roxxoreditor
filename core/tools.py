@@ -13,11 +13,11 @@ def loadRoxxorRc():
     """
     if os.path.isfile(ROXXORRC_PATH):
         with open(ROXXORRC_PATH, 'r') as rcFile:
-            return json.loads(rcFile.read())
+            return json.loads(json.loads(rcFile.read()))
     else:
         with open(ROXXORRC_PATH, 'w') as rcFile:
-            rcFile.write(json.dumps('{"language": "english"}',
-                        indent=4, separators=(',', ': ')))
+            rcFile.write(json.dumps({"language": "english"},
+                        indent=4, separators=(',', ': '), sort_keys=True))
         return {"language": "english"}
 
 def writeRoxxorRc(configuration: dict):
@@ -25,7 +25,7 @@ def writeRoxxorRc(configuration: dict):
     """
     with open(ROXXORRC_PATH, 'w') as rcFile:
         rcFile.write(json.dumps(configuration,
-                        indent=4, separators=(',', ': ')))
+                        indent=4, separators=(',', ': '), sort_keys=True))
 
 def loadLangFile(path: str):
     """ Load the json from a lang file and return it as a dict.
