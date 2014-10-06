@@ -20,6 +20,11 @@ def askForData(parent: QtGui.QWidget):
     ok, dataType, data = DataDialog(parent).exec_()
     if dataType == None:
         data = None
+    elif dataType == bool:
+        if data == 'True':
+            data = True
+        else:
+            data = False
     else:
         try:
             data = dataType(data)
