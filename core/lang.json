@@ -37,12 +37,17 @@
     "french": {
         "aboutAction": "À propos",
         "aboutActionTip": "Informations sur l'application",
+        "aboutDialogContent": "L'incroyable éditeur de fichier structuré,\nby Julien Delplanque and Alexandre Devaux.",
+        "aboutDialogTitle": "À propos de RoxxoR Editor",
+        "errorDialogTitle": "Erreur",
         "exitAction": "Quitter",
         "exitActionTip": "Quitter l'application",
         "file": "Ficher",
         "fileMenu": "&Fichier",
         "helpMenu": "&Aide",
         "loadedWithModule": "chargé avec le module",
+        "modulesDialogContent": "L'extension du fichier n'est pas connue par Roxxor Editor.\nChoisissez le module à utiliser pour ce fichier :",
+        "modulesDialogTitle": "Selecteur de module",
         "newFileAction": "Nouveau fichier",
         "newFileActionTip": "Créer un nouveau fichier",
         "newFileCancelledStatus": "Créer un nouveau fichier annulé.",
@@ -53,11 +58,15 @@
         "openFileTitle": "Ouvrir un fichier",
         "preferencesAction": "Préférences",
         "preferencesActionTip": "Éditer les préférences",
+        "preferencesDialogContent": "Choisissez votre langue",
+        "preferencesDialogTitle": "Préférences",
         "readyStatus": "Roxxor Editor prêt!",
         "saveAction": "Sauver",
         "saveActionTip": "Sauver les modifications",
         "saveAsAction": "Sauver comme...",
         "saveAsActionTip": "Sauver les modifications",
+        "saveDialogContent": "Voulez vous sauver le fichier avant de quitter?",
+        "saveDialogTitle": "Sauver avant de quitter?",
         "saved": "sauvé"
     }
 }
