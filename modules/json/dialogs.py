@@ -72,7 +72,7 @@ class DataDialog(QtGui.QMessageBox):
         self.booleanWidget.setMaximumSize(QtCore.QSize(150,40))
         self.booleanWidget.addItem("True")
         self.booleanWidget.addItem("False")
-        self.noneWidget = QtGui.QLabel("None")
+        self.noneWidget = QtGui.QLabel("null")
         self.noneWidget.setMaximumSize(QtCore.QSize(150,40))
         self.integerWidget = QtGui.QLineEdit()
         self.integerWidget.setMaximumSize(QtCore.QSize(150,40))
