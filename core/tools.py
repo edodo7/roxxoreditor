@@ -13,7 +13,7 @@ def loadRoxxorRc():
     """
     if os.path.isfile(ROXXORRC_PATH):
         with open(ROXXORRC_PATH, 'r') as rcFile:
-            return json.loads(json.loads(rcFile.read()))
+            return json.loads(rcFile.read())
     else:
         with open(ROXXORRC_PATH, 'w') as rcFile:
             rcFile.write(json.dumps({"language": "english"},
