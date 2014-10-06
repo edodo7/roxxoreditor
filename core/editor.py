@@ -17,6 +17,8 @@ from core.dialog import preferencesDialog
 
 from core.tools import *
 
+LANG = loadLangFile("core/lang.json")
+
 class RoxxorEditorWindow(QtGui.QMainWindow):
     """ The main window of the editor.
     """

@@ -10,12 +10,14 @@ from PyQt4 import QtGui
 # Core
 from core.dialog import *
 from core.roxxoreditorwidget import *
+from core.tools import loadLangFile
 # Modules JSON
 from modules.json.displayerwidget import TreeWidgetJSON
 from modules.json.displayerwidget import TreeWidgetItemJSON
 from modules.json.tools import extractDataStructure
 
 # CONSTANTS
+LANG = loadLangFile("modules/json/lang.json")
 KEY_LABEL_DEFAULT = "Key: "
 RESTORE_BUTTON_DEFAULT = "Restore original value"
 

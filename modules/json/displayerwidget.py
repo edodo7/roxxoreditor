@@ -9,10 +9,14 @@ from PyQt4 import QtGui
 
 # Core
 from core.dialog import *
+from core.tools import loadLangFile
 
 # Modules JSON
 from modules.json.dialogs import *
 from modules.json.tools import extractDataStructure
+
+# CONSTANTS
+LANG = loadLangFile("modules/json/lang.json")
 
 class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
     """ A tree widget item specialised for displaying JSON data.

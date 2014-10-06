@@ -5,6 +5,11 @@
 # System
 from PyQt4 import QtGui
 
+# Core
+from core.tools import loadLangFile
+
+LANG = loadLangFile("core/lang.json")
+
 def aboutDialog(parent: QtGui.QWidget):
     """ Create and display the about dialog about Roxxor Editor.
     """

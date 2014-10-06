@@ -26,3 +26,9 @@ def writeRoxxorRc(configuration: dict):
     with open(ROXXORRC_PATH, 'w') as rcFile:
         rcFile.write(json.dumps(configuration,
                         indent=4, separators=(',', ': ')))
+
+def loadLangFile(path: str):
+    """ Load the json from a lang file and return it as a dict.
+    """
+    with open(path, 'r') as langFile:
+        return json.loads(langFile.read())

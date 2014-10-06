@@ -5,7 +5,12 @@
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
+# Core
 from core.dialog import *
+from core.tools import loadLangFile
+
+# CONSTANTS
+LANG = loadLangFile("modules/json/lang.json")
 
 def askForKey(parent: QtGui.QWidget):
     """ Create and display a dialog that ask to the user the key name.
