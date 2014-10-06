@@ -156,29 +156,44 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         Keyword arguments:
             qPoint -- The position of the mouse when the user clicked.
         """
-        addKey = QtGui.QAction("Add value", self)
-        addKey.triggered.connect(self.addKey)
-        addList = QtGui.QAction("Add list", self)
-        addList.triggered.connect(self.addList)
-        addDict = QtGui.QAction("Add dictionary", self)
-        addDict.triggered.connect(self.addDictionary)
-        remove = QtGui.QAction("Remove", self)
-        remove.triggered.connect(self.remove)
-        createDict = QtGui.QAction("Create dictionary", self)
-        createDict.triggered.connect(self.createDictOnRoot)
-        createList = QtGui.QAction("Create list", self)
-        createList.triggered.connect(self.createListOnRoot)
-        editKey = QtGui.QAction("Edit key", self)
-        editKey.triggered.connect(self.editKey)
-        menu = QtGui.QMenu(self)
-        treeItem = self.selectedItems()[0]
-        if treeItem.data != "root":
-            if treeItem.parent().dataType == dict:
-                menu.addAction(editKey)
-            if treeItem.dataType == None:
-                menu.addAction(remove)
+        if len(self.selectedItems()) > 0:
+            addKey = QtGui.QAction("Add value", self)
+            addKey.triggered.connect(self.addKey)
+            addList = QtGui.QAction("Add list", self)
+            addList.triggered.connect(self.addList)
+            addDict = QtGui.QAction("Add dictionary", self)
+            addDict.triggered.connect(self.addDictionary)
+            remove = QtGui.QAction("Remove", self)
+            remove.triggered.connect(self.remove)
+            createDict = QtGui.QAction("Create dictionary", self)
+            createDict.triggered.connect(self.createDictOnRoot)
+            createList = QtGui.QAction("Create list", self)
+            createList.triggered.connect(self.createListOnRoot)
+            editKey = QtGui.QAction("Edit key", self)
+            editKey.triggered.connect(self.editKey)
+            menu = QtGui.QMenu(self)
+            treeItem = self.selectedItems()[0]
+            if treeItem.data != "root":
+                if treeItem.parent().dataType == dict:
+                    menu.addAction(editKey)
+                if treeItem.dataType == None:
+                    menu.addAction(remove)
+                else:
+                    if treeItem.dataType == list:
+                        menu.addAction(addKey)
+                        menu.addAction(addList)
+                        menu.addAction(addDict)
+                        menu.addAction(remove)
+                    elif treeItem.dataType == dict:
+                        menu.addAction(addKey)
+                        menu.addAction(addList)
+                        menu.addAction(addDict)
+                        menu.addAction(remove)
             else:
-                if treeItem.dataType == list:
+                if treeItem.childCount() == 0 and treeItem.dataType == None:
+                    menu.addAction(createList)
+                    menu.addAction(createDict)
+                elif treeItem.dataType == list:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
@@ -188,21 +203,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(remove)
-        else:
-            if treeItem.childCount() == 0 and treeItem.dataType == None:
-                menu.addAction(createList)
-                menu.addAction(createDict)
-            elif treeItem.dataType == list:
-                menu.addAction(addKey)
-                menu.addAction(addList)
-                menu.addAction(addDict)
-                menu.addAction(remove)
-            elif treeItem.dataType == dict:
-                menu.addAction(addKey)
-                menu.addAction(addList)
-                menu.addAction(addDict)
-                menu.addAction(remove)
-        menu.exec_(QtGui.QCursor.pos())
+            menu.exec_(QtGui.QCursor.pos())
 
 
     def addKey(self):
