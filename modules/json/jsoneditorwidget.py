@@ -193,26 +193,27 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
     def saveValue(self):
         """ Save the value that has been modified precedently in the memory.
         """
-        subPath = self.path[0:len(self.path)-1]
-        dataStruct = dataStruct = extractDataStructure(self.data, subPath)
-        originalDataStruct = extractDataStructure(self.originalData, subPath)
-        try:
-            if originalDataStruct[self.key] != None: # From now you can not edit the type.
-                oldType = type(originalDataStruct[self.key])
-                if oldType == int:
-                    dataStruct[self.key] = int(self.integerWidget.text())
-                elif oldType == float:
-                    dataStruct[self.key] = float(self.floatWidget.text())
-                elif oldType == str:
-                    dataStruct[self.key] = self.stringWidget.toPlainText()
-                elif oldType == bool:
-                    if self.booleanWidget.currentText() == "True":
-                        dataStruct[self.key] = True
-                    else:
-                        dataStruct[self.key] = False
+        if self.key != None: # If this is True, that mean the user edit an item
+            subPath = self.path[0:len(self.path)-1]
+            dataStruct = dataStruct = extractDataStructure(self.data, subPath)
+            originalDataStruct = extractDataStructure(self.originalData, subPath)
+            try:
+                if originalDataStruct[self.key] != None: # From now you can not edit the type.
+                    oldType = type(originalDataStruct[self.key])
+                    if oldType == int:
+                        dataStruct[self.key] = int(self.integerWidget.text())
+                    elif oldType == float:
+                        dataStruct[self.key] = float(self.floatWidget.text())
+                    elif oldType == str:
+                        dataStruct[self.key] = self.stringWidget.toPlainText()
+                    elif oldType == bool:
+                        if self.booleanWidget.currentText() == "True":
+                            dataStruct[self.key] = True
+                        else:
+                            dataStruct[self.key] = False
 
-        except ValueError:
-            errorDialog(self, "Wrong entry!")
+            except ValueError:
+                errorDialog(self, "Wrong entry!")
 
     def resetData(self):
         """ Reset the data to create a new empty file.
