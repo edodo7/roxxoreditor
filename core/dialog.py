@@ -40,7 +40,9 @@ def modulesDialog(parent: QtGui.QWidget, modulesList: list):
     if proceed:
         return '.' + ext.lower()
 
-def saveDialog(parent):
+def saveDialog(parent: QtGui.QWidget):
+    """
+    """
     reply = QtGui.QMessageBox.question(parent, 'Save before quitting?',
                                     "Do you want to save before quitting?",
                                     QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
@@ -49,3 +51,10 @@ def saveDialog(parent):
         return True
     else:
         return False
+
+def preferencesDialog(parent: QtGui.QWidget, languageList: list):
+    """
+    """
+    return QtGui.QInputDialog.getItem(parent, "Preferences",
+                                    "Choose your language:",
+                                    languageList, editable=False)

@@ -13,7 +13,9 @@ from PyQt4 import QtGui
 from core.dialog import aboutDialog
 from core.dialog import modulesDialog
 from core.dialog import saveDialog
+from core.dialog import preferencesDialog
 
+from core.tools import *
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
     """ The main window of the editor.
@@ -30,6 +32,9 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.activeWidget = '.json'
         self.roxxorWidget = self.modulesDict[self.activeWidget]()
         self.setCentralWidget(self.roxxorWidget)
+
+        # Preferences
+        self.preferencesDict = loadRoxxorRc()
 
         # Actions
         newAction = QtGui.QAction('New File', self)
@@ -51,6 +56,10 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         saveAsAction.setShortcut('Ctrl+Shift+S')
         saveAsAction.setStatusTip('Save the modifications')
         saveAsAction.triggered.connect(self.saveAsFile)
+
+        preferencesAction = QtGui.QAction('Preferences', self)
+        preferencesAction.setStatusTip('Edit preferences')
+        preferencesAction.triggered.connect(self.preferences)
 
         exitAction = QtGui.QAction('Exit', self)
         exitAction.setShortcut('Ctrl+Q')
@@ -75,6 +84,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         fileMenu.addAction(openAction)
         fileMenu.addAction(saveAction)
         fileMenu.addAction(saveAsAction)
+        fileMenu.addAction(preferencesAction)
         fileMenu.addSeparator()
         fileMenu.addAction(exitAction)
 
@@ -191,6 +201,16 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
             self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
                                '\' saved.')
+
+    def preferences(self):
+        """ The action performed when the button "Preferences" in the menubar
+            is clicked.
+        """
+        language, ok = preferencesDialog(self, ["english", "french"]) # TODO has to be dynamic according to available languages.
+        if ok:
+            self.preferencesDict['language'] = language
+            writeRoxxorRc(self.preferencesDict)
+
 
     def closeEvent(self, event):
         """ Overload mother's method to ask if the user want to save before
