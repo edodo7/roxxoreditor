@@ -8,9 +8,10 @@ from PyQt4 import QtCore
 # Core
 from core.dialog import *
 from core.tools import loadLangFile
+from core.tools import loadRoxxorRc
 
 # CONSTANTS
-LANG = loadLangFile("modules/json/lang.json")
+LANG = loadLangFile("modules/json/lang.json")[loadRoxxorRc()["language"]]
 
 def askForKey(parent: QtGui.QWidget):
     """ Create and display a dialog that ask to the user the key name.
@@ -112,7 +113,7 @@ class DataDialog(QtGui.QMessageBox):
         self.radioButtonString.toggled.connect(self.radioStringClicked)
         self.radioButtonString.setChecked(True)
         self.radioButtonBoolean = QtGui.QRadioButton()
-        self.radioButtonBoolean.setText(LANG["boolRadioButon"])
+        self.radioButtonBoolean.setText(LANG["boolRadioButton"])
         self.radioButtonBoolean.toggled.connect(self.radioBooleanClicked)
         # Button group
         buttonGroup = QtGui.QButtonGroup()

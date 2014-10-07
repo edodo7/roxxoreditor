@@ -11,15 +11,14 @@ from PyQt4 import QtGui
 from core.dialog import *
 from core.roxxoreditorwidget import *
 from core.tools import loadLangFile
+from core.tools import loadRoxxorRc
 # Modules JSON
 from modules.json.displayerwidget import TreeWidgetJSON
 from modules.json.displayerwidget import TreeWidgetItemJSON
 from modules.json.tools import extractDataStructure
 
 # CONSTANTS
-LANG = loadLangFile("modules/json/lang.json")
-KEY_LABEL_DEFAULT = "Key: "
-RESTORE_BUTTON_DEFAULT = "Restore original value"
+LANG = loadLangFile("modules/json/lang.json")[loadRoxxorRc()["language"]]
 
 def registerModule(modulesDict):
     modulesDict['.json'] = RoxxorEditorJSON
@@ -50,7 +49,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         self.pathLabel = QtGui.QLabel("/")
         self.pathLabel.setSizePolicy(QtGui.QSizePolicy.Minimum,
                                      QtGui.QSizePolicy.Maximum)
-        self.keyLabel = QtGui.QLabel(KEY_LABEL_DEFAULT)
+        self.keyLabel = QtGui.QLabel(LANG["keyLabelDefault"])
         self.keyLabel.hide()
         self.valueLabel = QtGui.QLabel(LANG["valueLabel"])
         self.valueLabel.hide()
@@ -79,7 +78,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         self.inputWidgetLayout.currentWidget().hide()
 
         # Buttons
-        self.modificationsButton = QtGui.QPushButton(RESTORE_BUTTON_DEFAULT)
+        self.modificationsButton = QtGui.QPushButton(LANG["restoreButtonDefault"])
         self.connect(self.modificationsButton,
                      QtCore.SIGNAL("clicked()"),
                      self.restoreButtonClicked)
@@ -137,7 +136,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                 except ValueError:
                     dataSought = dataSought[element]
             self.key = self.path[len(self.path)-1]
-            self.keyLabel.setText(KEY_LABEL_DEFAULT+str(self.key))
+            self.keyLabel.setText(LANG["keyLabelDefault"]+str(self.key))
             self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path]))
             if dataSought == None:
                 self.inputWidgetLayout.setCurrentWidget(self.noneWidget)
@@ -159,7 +158,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             self.modificationsButton.show()
         else:
             # Key Label
-            self.keyLabel.setText(KEY_LABEL_DEFAULT)
+            self.keyLabel.setText(LANG["keyLabelDefault"])
 
             # Update path
             self.path = self.treeWidget.getTreePath(item)
