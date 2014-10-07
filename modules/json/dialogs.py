@@ -15,8 +15,8 @@ LANG = loadLangFile("modules/json/lang.json")
 def askForKey(parent: QtGui.QWidget):
     """ Create and display a dialog that ask to the user the key name.
     """
-    key, ok = QtGui.QInputDialog.getText(parent, 'Key name',
-            'Enter the key name:')
+    key, ok = QtGui.QInputDialog.getText(parent, LANG["askForKeyTitle"],
+            LANG["askForKeyContent"])
     return key, ok
 
 def askForData(parent: QtGui.QWidget):
@@ -34,7 +34,7 @@ def askForData(parent: QtGui.QWidget):
         try:
             data = dataType(data)
         except ValueError:
-            errorDialog(parent, "The data typed does not correspond to the type choosen.")
+            errorDialog(parent, LANG["errorDataTypeDontCorrespond"])
             ok = False
     return data, ok
 
@@ -45,8 +45,8 @@ def askForIndex(parent: QtGui.QWidget, minimum: int, maximum: int):
         minimum -- Lower boundary of the index choice.
         maximum -- Higher boundary of the index choice.
     """
-    index, ok = QtGui.QInputDialog.getInteger(parent, 'Index',
-            'Enter the index:', value=maximum, min=minimum, max=maximum)
+    index, ok = QtGui.QInputDialog.getInteger(parent, LANG["askForIndexTitle"],
+            LANG["askForIndexContent"], value=maximum, min=minimum, max=maximum)
     return index, ok
 
 def isConfirmed(parent: QtGui.QWidget, description: str):
@@ -56,7 +56,7 @@ def isConfirmed(parent: QtGui.QWidget, description: str):
     Keyword arguments:
         description -- The description of what have to be confirmed.
     """
-    reply = QtGui.QMessageBox.question(parent, 'Confirmation',
+    reply = QtGui.QMessageBox.question(parent, LANG["isConfirmedTitle"],
                             description,
                             QtGui.QMessageBox.Yes |
                             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
@@ -72,8 +72,8 @@ class DataDialog(QtGui.QMessageBox):
         """ Initialization of the object.
         """
         QtGui.QMessageBox.__init__(self, parent)
-        self.setWindowTitle("Data")
-        self.setText("Enter the data:")
+        self.setWindowTitle(LANG["askForDataTitle"])
+        self.setText(LANG["askForDataContent"])
         self.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
         self.setDefaultButton(QtGui.QMessageBox.Cancel)
         # Input widget
@@ -99,20 +99,20 @@ class DataDialog(QtGui.QMessageBox):
         self.inputWidgetLayout.addWidget(self.floatWidget)
         # Radio buttons
         self.radioButtonNull = QtGui.QRadioButton()
-        self.radioButtonNull.setText("null")
+        self.radioButtonNull.setText(LANG["nullRadioButton"])
         self.radioButtonNull.toggled.connect(self.radioNullClicked)
         self.radioButtonInteger = QtGui.QRadioButton()
-        self.radioButtonInteger.setText("Integer")
+        self.radioButtonInteger.setText(LANG["intRadioButton"])
         self.radioButtonInteger.toggled.connect(self.radioIntegerClicked)
         self.radioButtonFloat = QtGui.QRadioButton()
-        self.radioButtonFloat.setText("Float")
+        self.radioButtonFloat.setText(LANG["floatRadioButton"])
         self.radioButtonFloat.toggled.connect(self.radioFloatClicked)
         self.radioButtonString = QtGui.QRadioButton()
-        self.radioButtonString.setText("String")
+        self.radioButtonString.setText(LANG["strRadioButton"])
         self.radioButtonString.toggled.connect(self.radioStringClicked)
         self.radioButtonString.setChecked(True)
         self.radioButtonBoolean = QtGui.QRadioButton()
-        self.radioButtonBoolean.setText("Boolean")
+        self.radioButtonBoolean.setText(LANG["boolRadioButon"])
         self.radioButtonBoolean.toggled.connect(self.radioBooleanClicked)
         # Button group
         buttonGroup = QtGui.QButtonGroup()

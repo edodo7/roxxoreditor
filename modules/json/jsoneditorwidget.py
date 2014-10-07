@@ -52,7 +52,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                                      QtGui.QSizePolicy.Maximum)
         self.keyLabel = QtGui.QLabel(KEY_LABEL_DEFAULT)
         self.keyLabel.hide()
-        self.valueLabel = QtGui.QLabel("Value:")
+        self.valueLabel = QtGui.QLabel(LANG["valueLabel"])
         self.valueLabel.hide()
 
         # Input widget
@@ -215,7 +215,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
                             dataStruct[self.key] = False
 
             except ValueError:
-                errorDialog(self, "Wrong entry!")
+                errorDialog(self, LANG["errorWrongEntry"])
 
     def resetData(self):
         """ Reset the data to create a new empty file.
