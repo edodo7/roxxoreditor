@@ -8,7 +8,8 @@ Roxxor editor uses PyQt4 for its GUI, so obviously PyQt4 is a dependency of roxx
 To test the roxxor JSON editor:
 
 ~~~
-    python3 core/editor.py
+    cd roxxoreditor
+    ./roxxor.py
 ~~~
 
 The XML editor is not functional yet.

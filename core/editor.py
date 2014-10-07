@@ -12,7 +12,12 @@ from PyQt4 import QtGui
 # Core
 from core.dialog import aboutDialog
 from core.dialog import modulesDialog
+from core.dialog import saveDialog
+from core.dialog import preferencesDialog
 
+from core.tools import *
+
+LANG = loadLangFile("core/lang.json")[loadRoxxorRc()["language"]]
 
 class RoxxorEditorWindow(QtGui.QMainWindow):
     """ The main window of the editor.
@@ -30,30 +35,37 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.roxxorWidget = self.modulesDict[self.activeWidget]()
         self.setCentralWidget(self.roxxorWidget)
 
+        # Preferences
+        self.preferencesDict = loadRoxxorRc()
+
         # Actions
-        newAction = QtGui.QAction('New File', self)
+        newAction = QtGui.QAction(LANG["newFileAction"], self)
         newAction.setShortcut('Ctrl+N')
-        newAction.setStatusTip('Create a new file')
+        newAction.setStatusTip(LANG["newFileActionTip"])
         newAction.triggered.connect(self.newFile)
 
-        openAction = QtGui.QAction('Open', self)
+        openAction = QtGui.QAction(LANG["openAction"], self)
         openAction.setShortcut('Ctrl+O')
-        openAction.setStatusTip('Open a file')
+        openAction.setStatusTip(LANG["openActionTip"])
         openAction.triggered.connect(self.openFile)
 
-        saveAction = QtGui.QAction('Save', self)
+        saveAction = QtGui.QAction(LANG["saveAction"], self)
         saveAction.setShortcut('Ctrl+S')
-        saveAction.setStatusTip('Save the modifications')
+        saveAction.setStatusTip(LANG["saveActionTip"])
         saveAction.triggered.connect(self.saveFile)
 
-        saveAsAction = QtGui.QAction('Save As...', self)
+        saveAsAction = QtGui.QAction(LANG["saveAsAction"], self)
         saveAsAction.setShortcut('Ctrl+Shift+S')
-        saveAsAction.setStatusTip('Save the modifications')
+        saveAsAction.setStatusTip(LANG["saveAsActionTip"])
         saveAsAction.triggered.connect(self.saveAsFile)
 
-        exitAction = QtGui.QAction('Exit', self)
+        preferencesAction = QtGui.QAction(LANG["preferencesAction"], self)
+        preferencesAction.setStatusTip(LANG["preferencesActionTip"])
+        preferencesAction.triggered.connect(self.preferences)
+
+        exitAction = QtGui.QAction(LANG["exitAction"], self)
         exitAction.setShortcut('Ctrl+Q')
-        exitAction.setStatusTip('Exit application')
+        exitAction.setStatusTip(LANG["exitActionTip"])
         exitAction.triggered.connect(self.close)
 
         # findAction = QtGui.QAction('Find...', self)
@@ -61,26 +73,27 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         # findAction.setStatusTip('Search key/value')
         # findAction.triggered.connect(self.findKeyValue)
 
-        aboutAction = QtGui.QAction('About', self)
+        aboutAction = QtGui.QAction(LANG["aboutAction"], self)
         aboutAction.setShortcut('F1')
-        aboutAction.setStatusTip('Application informations')
-        aboutAction.triggered.connect(aboutDialog)
+        aboutAction.setStatusTip(LANG["aboutActionTip"])
+        aboutAction.triggered.connect(self.displayAboutDialog)
 
         # Menu Bar
         menubar = self.menuBar()
 
-        fileMenu = menubar.addMenu('&File')
+        fileMenu = menubar.addMenu(LANG["fileMenu"])
         fileMenu.addAction(newAction)
         fileMenu.addAction(openAction)
         fileMenu.addAction(saveAction)
         fileMenu.addAction(saveAsAction)
+        fileMenu.addAction(preferencesAction)
         fileMenu.addSeparator()
         fileMenu.addAction(exitAction)
 
         # fileMenu = menubar.addMenu('Fi&nd')
         # fileMenu.addAction(findAction)
 
-        fileMenu = menubar.addMenu('&Help')
+        fileMenu = menubar.addMenu(LANG["helpMenu"])
         fileMenu.addAction(aboutAction)
 
         self.resize(800, 400)
@@ -88,8 +101,12 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         self.move(QtGui.QApplication.desktop().screen().rect().center()-
                   self.rect().center())
 
-        self.displayStatus('Roxxor Editor ready!', 3)
+        self.displayStatus(LANG["readyStatus"], 3)
 
+    def displayAboutDialog(self):
+        """ Display the about dialog.
+        """
+        aboutDialog(self)
 
     def displayStatus(self, status, delay=5):
         """ Display the specified message status in the status bar
@@ -111,16 +128,16 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         if ext != None:
             # Reset Data
             self.roxxorWidget.resetData()
-            self.displayStatus('New file opened.')
+            self.displayStatus(LANG["newFileOpenedStatus"])
         else:
-            self.displayStatus('New file cancelled.')
+            self.displayStatus(LANG["newFileCancelledStatus"])
 
 
     def openFile(self):
         """ The action performed when the button "Open" in the tool bar
             is clicked.
         """
-        self.fileName = QtGui.QFileDialog.getOpenFileName(self, 'Open a file',
+        self.fileName = QtGui.QFileDialog.getOpenFileName(self, LANG["openActionTip"],
                         str(os.path.expanduser("~")))
 
         base, ext = os.path.splitext(self.fileName)
@@ -131,11 +148,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         if ext != None and self.fileName != "":
             # Read and Set datas
             self.roxxorWidget.setData(self.fileName)
-            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
-                               '\' loaded with the module \'' +
+            self.displayStatus(LANG["file"]+'\'' + os.path.split(self.fileName)[1] +
+                               '\' '+LANG["loadedWithModule"]+' \'' +
                                self.activeWidget[1:].upper() + '\'.')
         else:
-            self.displayStatus('Open file cancelled.')
+            self.displayStatus(LANG["openFileCancelledStatus"])
 
 
     def updateModule(self, ext=""):
@@ -146,7 +163,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """
         # Extension not known by Roxxor; ask the user which module to use
         if ext not in self.modulesDict.keys():
-            ext = modulesDialog(self.modulesDict.keys())
+            ext = modulesDialog(self, self.modulesDict.keys())
 
         # Module has changed; load the new one
         if ext != None and ext != self.activeWidget:
@@ -162,21 +179,45 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             is clicked.
         """
         if self.fileName == "":
-            self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file")
+            self.fileName = QtGui.QFileDialog.getSaveFileName(self, LANG["saveAction"])
 
         if self.fileName != "":
+            # Save the value that is being edited
+            self.roxxorWidget.saveValue()
+            # Write in the file
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
-            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
-                               '\' saved.')
+            self.displayStatus(LANG["file"]+' \'' + os.path.split(self.fileName)[1] +
+                               '\' '+LANG["saved"]+'.')
 
 
     def saveAsFile(self):
         """ The action performed when the button "Save as..." in the menubar
             is clicked.
         """
-        self.fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file as...")
+        self.fileName = QtGui.QFileDialog.getSaveFileName(self, LANG["saveAsAction"])
 
         if self.fileName != "":
+            # Save the value that is being edited
+            self.roxxorWidget.saveValue()
+            # Write in the file
             self.roxxorWidget.write(self.fileName, self.roxxorWidget.data)
-            self.displayStatus('File \'' + os.path.split(self.fileName)[1] +
-                               '\' saved.')
+            self.displayStatus(LANG["file"]+' \'' + os.path.split(self.fileName)[1] +
+                               '\' '+LANG["saved"]+'.')
+
+    def preferences(self):
+        """ The action performed when the button "Preferences" in the menubar
+            is clicked.
+        """
+        language, ok = preferencesDialog(self, ["english", "french"]) # TODO has to be dynamic according to available languages.
+        if ok:
+            self.preferencesDict['language'] = language
+            writeRoxxorRc(self.preferencesDict)
+
+
+    def closeEvent(self, event):
+        """ Overload mother's method to ask if the user want to save before
+            closing the app.
+        """
+        if self.roxxorWidget.data != None and saveDialog(self):
+            self.saveFile()
+        event.accept()

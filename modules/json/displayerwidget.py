@@ -7,9 +7,17 @@ import copy
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
+# Core
+from core.dialog import *
+from core.tools import loadLangFile
+from core.tools import loadRoxxorRc
+
 # Modules JSON
 from modules.json.dialogs import *
 from modules.json.tools import extractDataStructure
+
+# CONSTANTS
+LANG = loadLangFile("modules/json/lang.json")[loadRoxxorRc()["language"]]
 
 class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
     """ A tree widget item specialised for displaying JSON data.
@@ -55,7 +63,6 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         self.roxxorEditorJSON = roxxorEditorJSONwidget
         # Root item
         self.rootItem = TreeWidgetItemJSON("root")
-        self.insertTopLevelItem(0, self.rootItem)
         # Manage custom context menu
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.connect(self,
@@ -154,53 +161,54 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         Keyword arguments:
             qPoint -- The position of the mouse when the user clicked.
         """
-        addKey = QtGui.QAction("Add value", self)
-        addKey.triggered.connect(self.addKey)
-        addList = QtGui.QAction("Add list", self)
-        addList.triggered.connect(self.addList)
-        addDict = QtGui.QAction("Add dictionary", self)
-        addDict.triggered.connect(self.addDictionary)
-        remove = QtGui.QAction("Remove", self)
-        remove.triggered.connect(self.remove)
-        createDict = QtGui.QAction("Create dictionary", self)
-        createDict.triggered.connect(self.createDictOnRoot)
-        createList = QtGui.QAction("Create list", self)
-        createList.triggered.connect(self.createListOnRoot)
-        editKey = QtGui.QAction("Edit key", self)
-        editKey.triggered.connect(self.editKey)
-        menu = QtGui.QMenu(self)
-        treeItem = self.selectedItems()[0]
-        if treeItem.data != "root":
-            if treeItem.dataType == None:
-                menu.addAction(remove)
+        if len(self.selectedItems()) > 0:
+            addKey = QtGui.QAction(LANG["addKeyAction"], self)
+            addKey.triggered.connect(self.addKey)
+            addList = QtGui.QAction(LANG["addListAction"], self)
+            addList.triggered.connect(self.addList)
+            addDict = QtGui.QAction(LANG["addDictAction"], self)
+            addDict.triggered.connect(self.addDictionary)
+            remove = QtGui.QAction(LANG["removeAction"], self)
+            remove.triggered.connect(self.remove)
+            createDict = QtGui.QAction(LANG["createDictAction"], self)
+            createDict.triggered.connect(self.createDictOnRoot)
+            createList = QtGui.QAction(LANG["createListAction"], self)
+            createList.triggered.connect(self.createListOnRoot)
+            editKey = QtGui.QAction(LANG["editKeyAction"], self)
+            editKey.triggered.connect(self.editKey)
+            menu = QtGui.QMenu(self)
+            treeItem = self.selectedItems()[0]
+            if treeItem.data != "root":
+                if treeItem.parent().dataType == dict:
+                    menu.addAction(editKey)
+                if treeItem.dataType == None:
+                    menu.addAction(remove)
+                else:
+                    if treeItem.dataType == list:
+                        menu.addAction(addKey)
+                        menu.addAction(addList)
+                        menu.addAction(addDict)
+                        menu.addAction(remove)
+                    elif treeItem.dataType == dict:
+                        menu.addAction(addKey)
+                        menu.addAction(addList)
+                        menu.addAction(addDict)
+                        menu.addAction(remove)
             else:
-                if treeItem.dataType == list:
+                if treeItem.childCount() == 0 and treeItem.dataType == None:
+                    menu.addAction(createList)
+                    menu.addAction(createDict)
+                elif treeItem.dataType == list:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
-                    menu.addAction(editKey)
                     menu.addAction(remove)
                 elif treeItem.dataType == dict:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
-                    menu.addAction(editKey)
                     menu.addAction(remove)
-        else:
-            if treeItem.childCount() == 0 and treeItem.dataType == None:
-                menu.addAction(createList)
-                menu.addAction(createDict)
-            elif treeItem.dataType == list:
-                menu.addAction(addKey)
-                menu.addAction(addList)
-                menu.addAction(addDict)
-                menu.addAction(remove)
-            elif treeItem.dataType == dict:
-                menu.addAction(addKey)
-                menu.addAction(addList)
-                menu.addAction(addDict)
-                menu.addAction(remove)
-        menu.exec_(QtGui.QCursor.pos())
+            menu.exec_(QtGui.QCursor.pos())
 
 
     def addKey(self):
@@ -213,20 +221,23 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                                     self.roxxorEditorJSON.originalData, path)
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index, ok = askForIndex(0, len(dataStruct))
+            index, ok = askForIndex(self, 0, len(dataStruct))
             if ok:
-                data, ok = askForData()
+                data, ok = askForData(self)
                 if ok:
                     originalDataStruct.insert(index, data)
                     dataStruct.insert(index, data)
+                    self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
-            keyName, ok = askForKey()
-            if ok:
-                data, ok = askForData()
+            keyName, ok = askForKey(self)
+            if ok and keyName != "":
+                data, ok = askForData(self)
                 if ok:
                     originalDataStruct[keyName] = data
                     dataStruct[keyName] = data
-        self.recreateTreeView(self.roxxorEditorJSON.data)
+                    self.recreateTreeView(self.roxxorEditorJSON.data)
+            elif ok and keyName == "":
+                errorDialog(self, LANG["errorKeyCanNotEmpty"])
 
     def addDictionary(self):
         """ Add a dictionary in the data structure selected by the user in
@@ -238,16 +249,19 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                                     self.roxxorEditorJSON.originalData, path)
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index, ok = askForIndex(0, len(dataStruct))
+            index, ok = askForIndex(self, 0, len(dataStruct))
             if ok:
                 originalDataStruct.insert(index, dict())
                 dataStruct.insert(index, dict())
+                self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
-            keyName, ok = askForKey()
-            if ok:
+            keyName, ok = askForKey(self)
+            if ok and keyName != "":
                 originalDataStruct[keyName] = dict()
                 dataStruct[keyName] = dict()
-        self.recreateTreeView(self.roxxorEditorJSON.data)
+                self.recreateTreeView(self.roxxorEditorJSON.data)
+            elif ok and keyName == "":
+                errorDialog(self, LANG["errorKeyCanNotEmpty"])
 
 
     def addList(self):
@@ -260,21 +274,24 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                                     self.roxxorEditorJSON.originalData, path)
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
         if type(dataStruct) == list:
-            index, ok = askForIndex(0, len(dataStruct))
+            index, ok = askForIndex(self, 0, len(dataStruct))
             if ok:
                 originalDataStruct.insert(index, list())
                 dataStruct.insert(index, list())
+                self.recreateTreeView(self.roxxorEditorJSON.data)
         elif type(dataStruct) == dict:
-            keyName, ok = askForKey()
-            if ok:
+            keyName, ok = askForKey(self)
+            if ok and keyName != "":
                 originalDataStruct[keyName] = list()
                 dataStruct[keyName] = list()
-        self.recreateTreeView(self.roxxorEditorJSON.data)
+                self.recreateTreeView(self.roxxorEditorJSON.data)
+            elif ok and keyName == "":
+                errorDialog(self, LANG["errorKeyCanNotEmpty"])
 
     def remove(self):
         """ Remove the data represented by the item user clicked on.
         """
-        if isConfirmed("Are you sure to delete this item?"):
+        if isConfirmed(self, "Are you sure to delete this item?"):
             item = self.selectedItems()[0]
             path = self.getTreePath(item)
             endPath = path[len(path)-1]
@@ -288,7 +305,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             self.recreateTreeView(self.roxxorEditorJSON.data)
             self.roxxorEditorJSON.key = None
             self.roxxorEditorJSON.keyLabel.hide()
-            self.roxxorEditorJSON.textField.hide()
+            self.roxxorEditorJSON.currentInputWidget().hide()
             self.roxxorEditorJSON.valueLabel.hide()
             self.roxxorEditorJSON.modificationsButton.hide()
 
@@ -309,4 +326,25 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     def editKey(self):
         """ Edit the key selected by the user.
         """
-        pass
+        item = self.selectedItems()[0]
+        path = self.getTreePath(item)
+        subPath = path[0:len(path)-1]
+        index = path[len(path)-1]
+        originalDataStruct = extractDataStructure(self.roxxorEditorJSON.originalData, subPath)
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, subPath)
+        newKey, ok = askForKey(self)
+        if ok and newKey != "":
+            originalData = originalDataStruct[index]
+            data = dataStruct[index]
+            del(originalDataStruct[index])
+            del(dataStruct[index])
+            originalDataStruct[newKey] = originalData
+            dataStruct[newKey] = data
+            self.recreateTreeView(self.roxxorEditorJSON.data)
+            self.roxxorEditorJSON.key = None
+            self.roxxorEditorJSON.keyLabel.hide()
+            self.roxxorEditorJSON.currentInputWidget().hide()
+            self.roxxorEditorJSON.valueLabel.hide()
+            self.roxxorEditorJSON.modificationsButton.hide()
+        elif ok and newKey == "":
+            errorDialog(self, LANG["errorKeyCanNotEmpty"])
