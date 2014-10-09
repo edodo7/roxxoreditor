@@ -177,7 +177,10 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         item = self.rootItem
         for key in path:
             item = item.getChildWithKey(key)
-        item.addChild(node)
+        if item.dataType == list and node.dataType != list and node.dataType != dict:
+            item.addChild(TreeWidgetItemJSON(item.childCount(), int))
+        else:
+            item.addChild(node)
 
     def contextMenu(self, qPoint):
         """ Definition of the contextual menu of the tree view.
