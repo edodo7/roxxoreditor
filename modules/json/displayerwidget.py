@@ -182,6 +182,19 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         else:
             item.addChild(node)
 
+    def editNode(self, path: list, newKeyName: str):
+        """ Edit the name of the key for the node located by the path.
+
+        Keyword arguments:
+            path       -- The path of the node to modify.
+            newKeyName -- The new key name.
+        """
+        item = self.rootItem
+        for key in path:
+            item = item.getChildWithKey(key)
+        item.data = newKeyName
+        item.setText()
+
     def removeNode(self, path: list):
         """ Remove the node located by the path.
 
@@ -395,7 +408,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             del(dataStruct[index])
             originalDataStruct[newKey] = originalData
             dataStruct[newKey] = data
-            self.recreateTreeView(self.roxxorEditorJSON.data)
+            self.editNode(path, newKey)
             self.roxxorEditorJSON.key = None
             self.roxxorEditorJSON.keyLabel.hide()
             self.roxxorEditorJSON.currentInputWidget().hide()
