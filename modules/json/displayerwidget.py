@@ -182,6 +182,25 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         else:
             item.addChild(node)
 
+    def removeNode(self, path: list):
+        """ Remove the node located by the path.
+
+        Keyword arguments:
+            path -- The path to the node to remove as a list.
+        """
+        item = self.rootItem
+        for key in path[0:len(path)-1]:
+            item = item.getChildWithKey(key)
+        if item.dataType == list:
+            item.removeChild(item.child(item.childCount()-1))
+        else:
+            childToRemove = None
+            for i in range(item.childCount()):
+                if item.child(i).data == path[len(path)-1]:
+                    childToRemove = item.child(i)
+                    break
+            item.removeChild(childToRemove)
+
     def contextMenu(self, qPoint):
         """ Definition of the contextual menu of the tree view.
 
@@ -341,7 +360,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             else:
                 del(dataStruct[endPath])
             self.roxxorEditorJSON.originalData = copy.deepcopy(self.roxxorEditorJSON.data)
-            self.recreateTreeView(self.roxxorEditorJSON.data)
+            self.removeNode(path+[endPath])
             self.roxxorEditorJSON.key = None
             self.roxxorEditorJSON.keyLabel.hide()
             self.roxxorEditorJSON.currentInputWidget().hide()
