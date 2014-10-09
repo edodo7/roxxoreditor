@@ -47,6 +47,18 @@ class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
             s += " {}"
         QtGui.QTreeWidgetItem.setText(self, 0, s)
 
+    def getChildWithKey(self, key):
+        """ Return the child wich its data is equal to the key. If no child
+            statisfy the key, a KeyError is raised.
+
+        Keyword arguments:
+            key -- The key you want to find the child.
+        """
+        for i in range(self.childCount()):
+            if self.child(i).data == key:
+                return self.child(i)
+        raise KeyError()
+
 class TreeWidgetJSON(QtGui.QTreeWidget):
     """ A tree widget specialised for displaying a JSON.
     """
@@ -155,6 +167,53 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         """
         return item.childCount() == 0
 
+    def addNode(self, path: list, node: TreeWidgetItemJSON):
+        """ Add the TreeWidgetItemJSON to the child located at path.
+
+        Keyword arguments:
+            path -- The path were to add the node.
+            node -- The node to add.
+        """
+        item = self.rootItem
+        for key in path:
+            item = item.getChildWithKey(key)
+        if item.dataType == list and node.dataType != list and node.dataType != dict:
+            item.addChild(TreeWidgetItemJSON(item.childCount(), int))
+        else:
+            item.addChild(node)
+
+    def editNode(self, path: list, newKeyName: str):
+        """ Edit the name of the key for the node located by the path.
+
+        Keyword arguments:
+            path       -- The path of the node to modify.
+            newKeyName -- The new key name.
+        """
+        item = self.rootItem
+        for key in path:
+            item = item.getChildWithKey(key)
+        item.data = newKeyName
+        item.setText()
+
+    def removeNode(self, path: list):
+        """ Remove the node located by the path.
+
+        Keyword arguments:
+            path -- The path to the node to remove as a list.
+        """
+        item = self.rootItem
+        for key in path[0:len(path)-1]:
+            item = item.getChildWithKey(key)
+        if item.dataType == list:
+            item.removeChild(item.child(item.childCount()-1))
+        else:
+            childToRemove = None
+            for i in range(item.childCount()):
+                if item.child(i).data == path[len(path)-1]:
+                    childToRemove = item.child(i)
+                    break
+            item.removeChild(childToRemove)
+
     def contextMenu(self, qPoint):
         """ Definition of the contextual menu of the tree view.
 
@@ -181,24 +240,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             if treeItem.data != "root":
                 if treeItem.parent().dataType == dict:
                     menu.addAction(editKey)
-                if treeItem.dataType == None:
-                    menu.addAction(remove)
-                else:
-                    if treeItem.dataType == list:
-                        menu.addAction(addKey)
-                        menu.addAction(addList)
-                        menu.addAction(addDict)
-                        menu.addAction(remove)
-                    elif treeItem.dataType == dict:
-                        menu.addAction(addKey)
-                        menu.addAction(addList)
-                        menu.addAction(addDict)
-                        menu.addAction(remove)
-            else:
-                if treeItem.childCount() == 0 and treeItem.dataType == None:
-                    menu.addAction(createList)
-                    menu.addAction(createDict)
-                elif treeItem.dataType == list:
+                if treeItem.dataType == list:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
@@ -208,6 +250,20 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(remove)
+                else:
+                    menu.addAction(remove)
+            else:
+                if treeItem.childCount() == 0 and treeItem.dataType == None:
+                    menu.addAction(createList)
+                    menu.addAction(createDict)
+                elif treeItem.dataType == list:
+                    menu.addAction(addKey)
+                    menu.addAction(addList)
+                    menu.addAction(addDict)
+                elif treeItem.dataType == dict:
+                    menu.addAction(addKey)
+                    menu.addAction(addList)
+                    menu.addAction(addDict)
             menu.exec_(QtGui.QCursor.pos())
 
 
@@ -227,7 +283,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 if ok:
                     originalDataStruct.insert(index, data)
                     dataStruct.insert(index, data)
-                    self.recreateTreeView(self.roxxorEditorJSON.data)
+                    newItem = TreeWidgetItemJSON(index, type(data))
+                    self.addNode(path, newItem)
+                    newItem.setExpanded(True)
         elif type(dataStruct) == dict:
             keyName, ok = askForKey(self)
             if ok and keyName != "":
@@ -235,7 +293,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 if ok:
                     originalDataStruct[keyName] = data
                     dataStruct[keyName] = data
-                    self.recreateTreeView(self.roxxorEditorJSON.data)
+                    newItem = TreeWidgetItemJSON(keyName, type(data))
+                    self.addNode(path, newItem)
+                    newItem.setExpanded(True)
             elif ok and keyName == "":
                 errorDialog(self, LANG["errorKeyCanNotEmpty"])
 
@@ -253,13 +313,17 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             if ok:
                 originalDataStruct.insert(index, dict())
                 dataStruct.insert(index, dict())
-                self.recreateTreeView(self.roxxorEditorJSON.data)
+                newItem = TreeWidgetItemJSON(index, dict)
+                self.addNode(path, newItem)
+                newItem.setExpanded(True)
         elif type(dataStruct) == dict:
             keyName, ok = askForKey(self)
             if ok and keyName != "":
                 originalDataStruct[keyName] = dict()
                 dataStruct[keyName] = dict()
-                self.recreateTreeView(self.roxxorEditorJSON.data)
+                newItem = TreeWidgetItemJSON(keyName, dict)
+                self.addNode(path, newItem)
+                newItem.setExpanded(True)
             elif ok and keyName == "":
                 errorDialog(self, LANG["errorKeyCanNotEmpty"])
 
@@ -278,13 +342,17 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             if ok:
                 originalDataStruct.insert(index, list())
                 dataStruct.insert(index, list())
-                self.recreateTreeView(self.roxxorEditorJSON.data)
+                newItem = TreeWidgetItemJSON(index, list)
+                self.addNode(path, newItem)
+                newItem.setExpanded(True)
         elif type(dataStruct) == dict:
             keyName, ok = askForKey(self)
             if ok and keyName != "":
                 originalDataStruct[keyName] = list()
                 dataStruct[keyName] = list()
-                self.recreateTreeView(self.roxxorEditorJSON.data)
+                newItem = TreeWidgetItemJSON(keyName, list)
+                self.addNode(path, newItem)
+                newItem.setExpanded(True)
             elif ok and keyName == "":
                 errorDialog(self, LANG["errorKeyCanNotEmpty"])
 
@@ -302,7 +370,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             else:
                 del(dataStruct[endPath])
             self.roxxorEditorJSON.originalData = copy.deepcopy(self.roxxorEditorJSON.data)
-            self.recreateTreeView(self.roxxorEditorJSON.data)
+            self.removeNode(path+[endPath])
             self.roxxorEditorJSON.key = None
             self.roxxorEditorJSON.keyLabel.hide()
             self.roxxorEditorJSON.currentInputWidget().hide()
@@ -340,7 +408,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             del(dataStruct[index])
             originalDataStruct[newKey] = originalData
             dataStruct[newKey] = data
-            self.recreateTreeView(self.roxxorEditorJSON.data)
+            self.editNode(path, newKey)
             self.roxxorEditorJSON.key = None
             self.roxxorEditorJSON.keyLabel.hide()
             self.roxxorEditorJSON.currentInputWidget().hide()
