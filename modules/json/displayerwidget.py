@@ -47,6 +47,18 @@ class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
             s += " {}"
         QtGui.QTreeWidgetItem.setText(self, 0, s)
 
+    def getChildWithKey(key):
+        """ Return the child wich its data is equal to the key. If no child
+            statisfy the key, a KeyError is raised.
+
+        Keyword arguments:
+            key -- The key you want to find the child.
+        """
+        for i in range(self.childCount()):
+            if self.child(i).data == key:
+                return self.child(i)
+        raise KeyError()
+
 class TreeWidgetJSON(QtGui.QTreeWidget):
     """ A tree widget specialised for displaying a JSON.
     """
@@ -154,6 +166,11 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             item -- The tree item to test.
         """
         return item.childCount() == 0
+
+    def addNode(path: list, node: TreeWidgetItemJSON):
+        """
+        """
+        pass
 
     def contextMenu(self, qPoint):
         """ Definition of the contextual menu of the tree view.
