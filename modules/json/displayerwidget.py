@@ -227,24 +227,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             if treeItem.data != "root":
                 if treeItem.parent().dataType == dict:
                     menu.addAction(editKey)
-                if treeItem.dataType == None:
-                    menu.addAction(remove)
-                else:
-                    if treeItem.dataType == list:
-                        menu.addAction(addKey)
-                        menu.addAction(addList)
-                        menu.addAction(addDict)
-                        menu.addAction(remove)
-                    elif treeItem.dataType == dict:
-                        menu.addAction(addKey)
-                        menu.addAction(addList)
-                        menu.addAction(addDict)
-                        menu.addAction(remove)
-            else:
-                if treeItem.childCount() == 0 and treeItem.dataType == None:
-                    menu.addAction(createList)
-                    menu.addAction(createDict)
-                elif treeItem.dataType == list:
+                if treeItem.dataType == list:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
@@ -254,6 +237,20 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(remove)
+                else:
+                    menu.addAction(remove)
+            else:
+                if treeItem.childCount() == 0 and treeItem.dataType == None:
+                    menu.addAction(createList)
+                    menu.addAction(createDict)
+                elif treeItem.dataType == list:
+                    menu.addAction(addKey)
+                    menu.addAction(addList)
+                    menu.addAction(addDict)
+                elif treeItem.dataType == dict:
+                    menu.addAction(addKey)
+                    menu.addAction(addList)
+                    menu.addAction(addDict)
             menu.exec_(QtGui.QCursor.pos())
 
 
