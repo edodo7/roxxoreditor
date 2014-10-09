@@ -59,6 +59,21 @@ class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
                 return self.child(i)
         raise KeyError()
 
+    def deepCopy(self):
+        """ Make a deep copy of the TreeWidgetItemJSON and return it.
+        """
+        def deepCopyRec(newParent, oldNode):
+            newNode = TreeWidgetItemJSON(oldNode.data, oldNode.dataType)
+            for i in range(oldNode.childCount()):
+                deepCopyRec(newNode, oldNode.child(i))
+            if newParent != None:
+                newParent.addChild(newNode)
+                return newParent
+            else:
+                return newNode
+
+        return deepCopyRec(None, self)
+
 class TreeWidgetJSON(QtGui.QTreeWidget):
     """ A tree widget specialised for displaying a JSON.
     """
@@ -80,6 +95,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         self.connect(self,
                      QtCore.SIGNAL('customContextMenuRequested(QPoint)'),
                      self.contextMenu)
+        # Copy variables
+        self.nodeCopiedBuffer = None
+        self.dataCopiedBuffer = None
 
 
     def loadData(self, data, parent: TreeWidgetItemJSON, force_explore=None):
@@ -197,7 +215,8 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         Keyword arguments:
             path -- The path were is located the node.
         """
-        pass
+        node = self.getNode(path)
+        self.nodeCopiedBuffer = node.deepCopy()#(node.data, node.dataType)
 
     def editNode(self, path: list, newKeyName: str):
         """ Edit the name of the key for the node located by the path.
@@ -249,6 +268,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             editKey = QtGui.QAction(LANG["editKeyAction"], self)
             editKey.triggered.connect(self.editKey)
             copy = QtGui.QAction(LANG["copyAction"], self)
+            copy.triggered.connect(self.copy)
+            paste = QtGui.QAction(LANG["pasteAction"], self)
+            paste.triggered.connect(self.paste)
             patternCopy = QtGui.QAction(LANG["patternCopyAction"], self)
             menu = QtGui.QMenu(self)
             treeItem = self.selectedItems()[0]
@@ -260,6 +282,8 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(copy)
+                    if self.dataCopiedBuffer != None:
+                        menu.addAction(paste)
                     menu.addAction(patternCopy)
                     menu.addAction(remove)
                 elif treeItem.dataType == dict:
@@ -267,6 +291,8 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(copy)
+                    if self.dataCopiedBuffer != None:
+                        menu.addAction(paste)
                     menu.addAction(patternCopy)
                     menu.addAction(remove)
                 else:
@@ -281,12 +307,16 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(copy)
+                    if self.dataCopiedBuffer != None:
+                        menu.addAction(paste)
                     menu.addAction(patternCopy)
                 elif treeItem.dataType == dict:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
                     menu.addAction(copy)
+                    if self.dataCopiedBuffer != None:
+                        menu.addAction(paste)
                     menu.addAction(patternCopy)
             menu.exec_(QtGui.QCursor.pos())
 
@@ -443,13 +473,46 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
     def copy(self):
         """ Copy the data selected by the user into the copy buffer.
         """
-        pass
+        item = self.selectedItems()[0]
+        path = self.getTreePath(item)
+        subPath = path[0:len(path)-1]
+        key = path[len(path)-1]
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, subPath)
+        self.dataCopiedBuffer = (key, dataStruct[key])
+        self.copyNode(path)
 
     def paste(self):
         """ Paste the data precedently copied by the user in the data structure
             selected.
         """
-        pass
+        item = self.selectedItems()[0]
+        path = self.getTreePath(item)
+        subPath = path[0:len(path)-1]
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
+        originalDataStruct = extractDataStructure(
+                                    self.roxxorEditorJSON.originalData, path)
+        if type(dataStruct) == dict:
+            key, ok = askForKey(self)
+            if ok:
+                originalDataStruct[key] = self.dataCopiedBuffer[1]
+                dataStruct[key] = self.dataCopiedBuffer[1]
+                self.nodeCopiedBuffer.data = key
+                self.nodeCopiedBuffer.setText()
+                self.addNode(path, self.nodeCopiedBuffer)
+                self.nodeCopiedBuffer.setExpanded(True)
+                self.nodeCopiedBuffer = None
+                self.sortItems(0,0)
+        else:
+            index, ok = askForIndex(self, 0, item.childCount())
+            if ok:
+                originalDataStruct.insert(index, self.dataCopiedBuffer[1])
+                dataStruct.insert(index, self.dataCopiedBuffer[1])
+                self.nodeCopiedBuffer.data = index
+                self.nodeCopiedBuffer.setText()
+                self.addNode(path, self.nodeCopiedBuffer)
+                self.nodeCopiedBuffer.setExpanded(True)
+                self.nodeCopiedBuffer = None
+                self.sortItems(0,0)
 
     def patternCopy(self):
         """ Copy the pattern extracted from the data structure selected by the
