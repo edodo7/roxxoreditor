@@ -158,6 +158,17 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         path.pop(0)
         return path
 
+    def getNode(self, path: list):
+        """ Return the node located by the path from the tree.
+
+        Keyword arguments:
+            path -- the location of the node.
+        """
+        item = self.rootItem
+        for key in path:
+            item = item.getChildWithKey(key)
+        return item
+
     def isLeaf(self, item: QtGui.QTreeWidgetItem):
         """ Return True if the item is a leaf of the QTreeWidget else
             return False.
@@ -174,9 +185,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             path -- The path were to add the node.
             node -- The node to add.
         """
-        item = self.rootItem
-        for key in path:
-            item = item.getChildWithKey(key)
+        item = self.getNode(path)
         if item.dataType == list and node.dataType != list and node.dataType != dict:
             item.addChild(TreeWidgetItemJSON(item.childCount(), int))
         else:
@@ -197,9 +206,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             path       -- The path of the node to modify.
             newKeyName -- The new key name.
         """
-        item = self.rootItem
-        for key in path:
-            item = item.getChildWithKey(key)
+        item = self.getNode(path)
         item.data = newKeyName
         item.setText()
 
@@ -209,9 +216,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         Keyword arguments:
             path -- The path to the node to remove as a list.
         """
-        item = self.rootItem
-        for key in path[0:len(path)-1]:
-            item = item.getChildWithKey(key)
+        item = self.getNode(path[0:len(path)-1])
         if item.dataType == list:
             item.removeChild(item.child(item.childCount()-1))
         else:
@@ -284,7 +289,6 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(copy)
                     menu.addAction(patternCopy)
             menu.exec_(QtGui.QCursor.pos())
-
 
     def addKey(self):
         """ Add a key in the data structure selected by the user in
