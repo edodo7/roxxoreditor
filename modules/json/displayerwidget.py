@@ -484,6 +484,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 self.addNode(path, self.nodeCopiedBuffer)
                 self.nodeCopiedBuffer.setExpanded(True)
                 self.nodeCopiedBuffer = None
+                self.dataCopiedBuffer = None
                 self.sortItems(0,0)
         else:
             index, ok = askForIndex(self, 0, item.childCount())
@@ -495,6 +496,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 self.addNode(path, self.nodeCopiedBuffer)
                 self.nodeCopiedBuffer.setExpanded(True)
                 self.nodeCopiedBuffer = None
+                self.dataCopiedBuffer = None
                 self.sortItems(0,0)
 
     def patternCopy(self):
