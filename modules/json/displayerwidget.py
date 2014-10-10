@@ -277,16 +277,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             if treeItem.data != "root":
                 if treeItem.parent().dataType == dict:
                     menu.addAction(editKey)
-                if treeItem.dataType == list:
-                    menu.addAction(addKey)
-                    menu.addAction(addList)
-                    menu.addAction(addDict)
-                    menu.addAction(copy)
-                    if self.dataCopiedBuffer != None:
-                        menu.addAction(paste)
-                    menu.addAction(patternCopy)
-                    menu.addAction(remove)
-                elif treeItem.dataType == dict:
+                if treeItem.dataType == list or treeItem.dataType == dict:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
@@ -302,15 +293,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                 if treeItem.childCount() == 0 and treeItem.dataType == None:
                     menu.addAction(createList)
                     menu.addAction(createDict)
-                elif treeItem.dataType == list:
-                    menu.addAction(addKey)
-                    menu.addAction(addList)
-                    menu.addAction(addDict)
-                    menu.addAction(copy)
-                    if self.dataCopiedBuffer != None:
-                        menu.addAction(paste)
-                    menu.addAction(patternCopy)
-                elif treeItem.dataType == dict:
+                elif treeItem.dataType == list or treeItem.dataType == dict:
                     menu.addAction(addKey)
                     menu.addAction(addList)
                     menu.addAction(addDict)
@@ -521,7 +504,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         pass
 
     def patternPaste(self):
-        """ Paste the pattern precedently copied byt the user in the data
+        """ Paste the pattern precedently copied by the user in the data
             structure selected.
         """
         pass
