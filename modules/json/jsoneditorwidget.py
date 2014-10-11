@@ -126,7 +126,7 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         """
         if self.path and self.key != None:
             self.saveValue()
-        if self.data and self.treeWidget.isLeaf(item) and len(item.text(0).split()) == 1:
+        if self.data and item.isLeaf() and len(item.text(0).split()) == 1:
             dataSought = self.data
             self.path = self.treeWidget.getTreePath(item)
             for element in self.path:

@@ -47,6 +47,12 @@ class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
             s += " {}"
         QtGui.QTreeWidgetItem.setText(self, 0, s)
 
+    def isLeaf(self):
+        """ Return True if the item is a leaf of the QTreeWidget else
+            return False.
+        """
+        return self.childCount() == 0
+
     def getChildWithKey(self, key):
         """ Return the child wich its data is equal to the key. If no child
             statisfy the key, a KeyError is raised.
@@ -186,15 +192,6 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         for key in path:
             item = item.getChildWithKey(key)
         return item
-
-    def isLeaf(self, item: QtGui.QTreeWidgetItem):
-        """ Return True if the item is a leaf of the QTreeWidget else
-            return False.
-
-        Keyword arguments:
-            item -- The tree item to test.
-        """
-        return item.childCount() == 0
 
     def addNode(self, path: list, node: TreeWidgetItemJSON):
         """ Add the TreeWidgetItemJSON to the child located at path.
