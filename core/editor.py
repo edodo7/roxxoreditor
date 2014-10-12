@@ -137,8 +137,12 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """ The action performed when the button "Open" in the tool bar
             is clicked.
         """
-        self.fileName = QtGui.QFileDialog.getOpenFileName(self, LANG["openActionTip"],
-                        str(os.path.expanduser("~")))
+        if self.fileName == "":
+            self.fileName = QtGui.QFileDialog.getOpenFileName(self, LANG["openActionTip"],
+                            str(os.path.expanduser("~")))
+        else:
+            self.fileName = QtGui.QFileDialog.getOpenFileName(self, LANG["openActionTip"],
+                            os.path.dirname(self.fileName))
 
         base, ext = os.path.splitext(self.fileName)
 
