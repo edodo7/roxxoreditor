@@ -139,14 +139,8 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         Keyword arguments:
             item -- The item selected.
         """
-        dataSought = self.data
         self.path = self.treeWidget.getTreePath(item)
-        for element in self.path:
-            try:
-                i = int(element)
-                dataSought = dataSought[i]
-            except ValueError:
-                dataSought = dataSought[element]
+        dataSought = extractDataStructure(self.data, self.path)
         self.key = self.path[len(self.path)-1]
         self.keyLabel.setText(LANG["keyLabelDefault"]+str(self.key))
         self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path]))
