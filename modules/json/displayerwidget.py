@@ -105,6 +105,21 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         self.nodeCopiedBuffer = None
         self.dataCopiedBuffer = None
 
+    def keyPressEvent(self, event):
+        """ Action performed when a key is pressed.
+        """
+        if len(self.selectedItems()) > 0:
+            key = event.key()
+            item = self.selectedItems()[0]
+            if key == QtCore.Qt.Key_Enter or key == QtCore.Qt.Key_Return:
+                if item.dataType == list or item.dataType == dict:
+                    if item.isExpanded():
+                        item.setExpanded(False)
+                    else:
+                        item.setExpanded(True)
+                else:
+                    pass #TODO
+        QtGui.QTreeWidget.keyPressEvent(self, event)
 
     def loadData(self, data, parent: TreeWidgetItemJSON, force_explore=None):
         """ Load data from a list or a dictionary into the TreeWidget.
