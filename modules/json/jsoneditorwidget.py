@@ -127,49 +127,64 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
         if self.path and self.key != None:
             self.saveValue()
         if self.data and item.isLeaf() and len(item.text(0).split()) == 1:
-            dataSought = self.data
-            self.path = self.treeWidget.getTreePath(item)
-            for element in self.path:
-                try:
-                    i = int(element)
-                    dataSought = dataSought[i]
-                except ValueError:
-                    dataSought = dataSought[element]
-            self.key = self.path[len(self.path)-1]
-            self.keyLabel.setText(LANG["keyLabelDefault"]+str(self.key))
-            self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path]))
-            if dataSought == None:
-                self.inputWidgetLayout.setCurrentWidget(self.noneWidget)
-            elif type(dataSought) == int:
-                self.integerWidget.setText(str(dataSought))
-                self.inputWidgetLayout.setCurrentWidget(self.integerWidget)
-            elif type(dataSought) == float:
-                self.floatWidget.setText(str(dataSought))
-                self.inputWidgetLayout.setCurrentWidget(self.floatWidget)
-            elif type(dataSought) == str:
-                self.stringWidget.setText(dataSought)
-                self.inputWidgetLayout.setCurrentWidget(self.stringWidget)
-            elif type(dataSought) == bool:
-                self.booleanWidget.setEditText(str(dataSought))
-                self.inputWidgetLayout.setCurrentWidget(self.booleanWidget)
-            self.keyLabel.show()
-            self.valueLabel.show()
-            self.inputWidgetLayout.currentWidget().show()
-            self.modificationsButton.show()
+            # Update GUI
+            self.dataClicked(item)
         else:
-            # Key Label
-            self.keyLabel.setText(LANG["keyLabelDefault"])
+            # Update GUI
+            self.dataStructureClicked(item)
 
-            # Update path
-            self.path = self.treeWidget.getTreePath(item)
-            self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path ]))
+    def dataClicked(self, item: QtGui.QTreeWidgetItem):
+        """ Update the GUI when a data item is clicked.
 
-            self.keyLabel.hide()
-            self.valueLabel.hide()
-            self.currentInputWidget().hide()
-            self.modificationsButton.hide()
+        Keyword arguments:
+            item -- The item selected.
+        """
+        dataSought = self.data
+        self.path = self.treeWidget.getTreePath(item)
+        for element in self.path:
+            try:
+                i = int(element)
+                dataSought = dataSought[i]
+            except ValueError:
+                dataSought = dataSought[element]
+        self.key = self.path[len(self.path)-1]
+        self.keyLabel.setText(LANG["keyLabelDefault"]+str(self.key))
+        self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path]))
+        if dataSought == None:
+            self.inputWidgetLayout.setCurrentWidget(self.noneWidget)
+        elif type(dataSought) == int:
+            self.integerWidget.setText(str(dataSought))
+            self.inputWidgetLayout.setCurrentWidget(self.integerWidget)
+        elif type(dataSought) == float:
+            self.floatWidget.setText(str(dataSought))
+            self.inputWidgetLayout.setCurrentWidget(self.floatWidget)
+        elif type(dataSought) == str:
+            self.stringWidget.setText(dataSought)
+            self.inputWidgetLayout.setCurrentWidget(self.stringWidget)
+        elif type(dataSought) == bool:
+            self.booleanWidget.setEditText(str(dataSought))
+            self.inputWidgetLayout.setCurrentWidget(self.booleanWidget)
+        self.keyLabel.show()
+        self.valueLabel.show()
+        self.inputWidgetLayout.currentWidget().show()
+        self.modificationsButton.show()
 
-            self.key = None
+    def dataStructureClicked(self, item: QtGui.QTreeWidgetItem):
+        """ Update the GUI when a data structure item is clicked.
+
+        Keyword arguments:
+            item -- The item selected.
+        """
+        # Key Label
+        self.keyLabel.setText(LANG["keyLabelDefault"])
+        # Update path
+        self.path = self.treeWidget.getTreePath(item)
+        self.pathLabel.setText("/"+'>'.join([ str(p) for p in self.path ]))
+        self.keyLabel.hide()
+        self.valueLabel.hide()
+        self.currentInputWidget().hide()
+        self.modificationsButton.hide()
+        self.key = None
 
     def restoreButtonClicked(self):
         """ Action performed when the restore button is clicked.

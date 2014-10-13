@@ -117,8 +117,11 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                         item.setExpanded(False)
                     else:
                         item.setExpanded(True)
+                    # Update GUI
+                    self.roxxorEditorJSON.dataStructureClicked(item)
                 else:
-                    pass #TODO
+                    # Update GUI
+                    self.roxxorEditorJSON.dataClicked(item)
         QtGui.QTreeWidget.keyPressEvent(self, event)
 
     def loadData(self, data, parent: TreeWidgetItemJSON, force_explore=None):
