@@ -14,8 +14,8 @@ def extractDataStructure(dataStruct, path: list):
     return dataStruct
 
 def cleanDataStructure(dataStruct):
-    """ Walk around the entire data structure dataStruct and set all the data
-        to a default value.
+    """ Walk around the entire data structure dataStruct and copy it but set
+        all the data to a default value.
         Default values:
         int   -> 0
         float -> 0.0
@@ -41,15 +41,19 @@ def cleanDataStructure(dataStruct):
             return ""
 
     if type(dataStruct) == list:
+        new = list()
         for i in range(len(dataStruct)):
             if type(dataStruct[i]) == list or type(dataStruct[i]) == dict:
-                cleanDataStructure(dataStruct[i])
+                new.append(cleanDataStructure(dataStruct[i]))
             else:
-                dataStruct[i] = cleanData(dataStruct[i])
+                new.append(cleanData(dataStruct[i]))
+        return new
     else:
+        new = dict()
         keyList = dataStruct.keys()
         for key in keyList:
             if type(dataStruct[key]) == list or type(dataStruct[key]) == dict:
-                cleanDataStructure(dataStruct[key])
+                new[key] = cleanDataStructure(dataStruct[key])
             else:
-                dataStruct[key] = cleanData(dataStruct[key])
+                new[key] = cleanData(dataStruct[key])
+        return new

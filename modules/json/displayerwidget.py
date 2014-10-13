@@ -14,7 +14,7 @@ from core.tools import loadRoxxorRc
 
 # Modules JSON
 from modules.json.dialogs import *
-from modules.json.tools import extractDataStructure
+from modules.json.tools import *
 
 # CONSTANTS
 LANG = loadLangFile("modules/json/lang.json")[loadRoxxorRc()["language"]]
@@ -213,7 +213,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             path -- The path were is located the node.
         """
         node = self.getNode(path)
-        self.nodeCopiedBuffer = node.deepCopy()#(node.data, node.dataType)
+        self.nodeCopiedBuffer = node.deepCopy()
 
     def editNode(self, path: list, newKeyName: str):
         """ Edit the name of the key for the node located by the path.
@@ -500,7 +500,14 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         """ Copy the pattern extracted from the data structure selected by the
             user into the patterCopy buffer.
         """
-        pass
+        item = self.selectedItems()[0]
+        path = self.getTreePath(item)
+        subPath = path[0:len(path)-1]
+        key = path[len(path)-1]
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, subPath)
+        datStruct = cleanDataStructure(dataStruct)
+        self.patternDataCopiedBuffer = (key, dataStruct[key])
+        self.copyNode(path)
 
     def patternPaste(self):
         """ Paste the pattern precedently copied by the user in the data
