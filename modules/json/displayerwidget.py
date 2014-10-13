@@ -104,6 +104,8 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         # Copy variables
         self.nodeCopiedBuffer = None
         self.dataCopiedBuffer = None
+        self.patternNodeCopiedBuffer = None
+        self.patternDataCopiedBuffer = None
 
     def keyPressEvent(self, event):
         """ Action performed when a key is pressed.
@@ -233,6 +235,15 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         node = self.getNode(path)
         self.nodeCopiedBuffer = node.deepCopy()
 
+    def patternCopyNode(self, path: list):
+        """ Copy the node located by the path in self.patternNodeCopiedBuffer.
+
+        Keyword arguments:
+            path -- The path were is located the node.
+        """
+        node = self.getNode(path)
+        self.patternNodeCopiedBuffer = node.deepCopy()
+
     def editNode(self, path: list, newKeyName: str):
         """ Edit the name of the key for the node located by the path.
 
@@ -287,6 +298,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
             paste = QtGui.QAction(LANG["pasteAction"], self)
             paste.triggered.connect(self.paste)
             patternCopy = QtGui.QAction(LANG["patternCopyAction"], self)
+            patternCopy.triggered.connect(self.patternCopy)
+            patternPaste = QtGui.QAction(LANG["patternPastAction"], self)
+            patternPaste.triggered.connect(self.patternPaste)
             menu = QtGui.QMenu(self)
             treeItem = self.selectedItems()[0]
             if treeItem.data != "root":
@@ -299,6 +313,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(copy)
                     if self.dataCopiedBuffer != None:
                         menu.addAction(paste)
+                    menu.addAction(patternCopy)
+                    if self.patternDataCopiedBuffer != None:
+                        menu.addAction(patternPaste)
                     menu.addAction(patternCopy)
                     menu.addAction(remove)
                 else:
@@ -315,6 +332,9 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     menu.addAction(copy)
                     if self.dataCopiedBuffer != None:
                         menu.addAction(paste)
+                    menu.addAction(patternCopy)
+                    if self.patternDataCopiedBuffer != None:
+                        menu.addAction(patternPaste)
                     menu.addAction(patternCopy)
             menu.exec_(QtGui.QCursor.pos())
 
@@ -523,12 +543,41 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
         subPath = path[0:len(path)-1]
         key = path[len(path)-1]
         dataStruct = extractDataStructure(self.roxxorEditorJSON.data, subPath)
-        datStruct = cleanDataStructure(dataStruct)
+        dataStruct = cleanDataStructure(dataStruct)
         self.patternDataCopiedBuffer = (key, dataStruct[key])
-        self.copyNode(path)
+        self.patternCopyNode(path)
 
     def patternPaste(self):
         """ Paste the pattern precedently copied by the user in the data
             structure selected.
         """
-        pass
+        item = self.selectedItems()[0]
+        path = self.getTreePath(item)
+        subPath = path[0:len(path)-1]
+        dataStruct = extractDataStructure(self.roxxorEditorJSON.data, path)
+        originalDataStruct = extractDataStructure(
+                                    self.roxxorEditorJSON.originalData, path)
+        if type(dataStruct) == dict:
+            key, ok = askForKey(self)
+            if ok:
+                originalDataStruct[key] = self.patternDataCopiedBuffer[1]
+                dataStruct[key] = self.patternDataCopiedBuffer[1]
+                self.patternNodeCopiedBuffer.data = key
+                self.patternNodeCopiedBuffer.setText()
+                self.addNode(path, self.patternNodeCopiedBuffer)
+                self.patternNodeCopiedBuffer.setExpanded(True)
+                self.patternNodeCopiedBuffer = None
+                self.patternDataCopiedBuffer = None
+                self.sortItems(0,0)
+        else:
+            index, ok = askForIndex(self, 0, item.childCount())
+            if ok:
+                originalDataStruct.insert(index, self.patternDataCopiedBuffer[1])
+                dataStruct.insert(index, self.patternDataCopiedBuffer[1])
+                self.patternNodeCopiedBuffer.data = index
+                self.patternNodeCopiedBuffer.setText()
+                self.addNode(path, self.patternNodeCopiedBuffer)
+                self.patternNodeCopiedBuffer.setExpanded(True)
+                self.patternNodeCopiedBuffer = None
+                self.patternDataCopiedBuffer = None
+                self.sortItems(0,0)
