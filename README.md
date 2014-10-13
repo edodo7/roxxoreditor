@@ -45,3 +45,7 @@ More features will be added soon, keep an eye on it!
 ![alt text](https://raw.githubusercontent.com/juliendelplanque/roxxoreditor/develop/screenshots/screenshot-6.png "Preview 7")
 
 ![alt text](https://raw.githubusercontent.com/juliendelplanque/roxxoreditor/develop/screenshots/screenshot-7.png "Preview 8")
+
+### Multilanguages support
+
+As you may saw it in the precedent screenshots, the app currently support English and french languages.
