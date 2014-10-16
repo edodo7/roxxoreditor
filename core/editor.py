@@ -131,6 +131,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.displayStatus(LANG["newFileOpenedStatus"])
         else:
             self.displayStatus(LANG["newFileCancelledStatus"])
+        self.fileName = ""
 
 
     def openFile(self):
