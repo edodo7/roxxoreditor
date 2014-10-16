@@ -131,6 +131,7 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.displayStatus(LANG["newFileOpenedStatus"])
         else:
             self.displayStatus(LANG["newFileCancelledStatus"])
+        self.fileName = ""
 
 
     def openFile(self):
@@ -141,6 +142,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
             self.fileName = QtGui.QFileDialog.getOpenFileName(self, LANG["openActionTip"],
                             str(os.path.expanduser("~")))
         else:
+            wantToSave = saveDialog(self)
+            if wantToSave == QtGui.QMessageBox.Yes:
+                    self.saveFile()
+            elif wantToSave == QtGui.QMessageBox.Cancel:
+                return
             self.fileName = QtGui.QFileDialog.getOpenFileName(self, LANG["openActionTip"],
                             os.path.dirname(self.fileName))
 
@@ -222,6 +228,11 @@ class RoxxorEditorWindow(QtGui.QMainWindow):
         """ Overload mother's method to ask if the user want to save before
             closing the app.
         """
-        if self.roxxorWidget.data != None and saveDialog(self):
-            self.saveFile()
-        event.accept()
+        if self.roxxorWidget.data != None:
+            wantToSave = saveDialog(self)
+            if wantToSave != QtGui.QMessageBox.Cancel:
+                if wantToSave == QtGui.QMessageBox.Yes:
+                    self.saveFile()
+                event.accept()
+            else:
+                event.ignore()

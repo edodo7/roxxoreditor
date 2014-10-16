@@ -48,12 +48,9 @@ def saveDialog(parent: QtGui.QWidget):
     """
     reply = QtGui.QMessageBox.question(parent, LANG["saveDialogTitle"],
                                     LANG["saveDialogContent"],
-                                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel,
                                     QtGui.QMessageBox.Yes)
-    if reply == QtGui.QMessageBox.Yes:
-        return True
-    else:
-        return False
+    return reply
 
 def preferencesDialog(parent: QtGui.QWidget, languageList: list):
     """
