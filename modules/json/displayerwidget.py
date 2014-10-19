@@ -77,8 +77,31 @@ class TreeWidgetItemJSON(QtGui.QTreeWidgetItem):
                 return newParent
             else:
                 return newNode
-
         return deepCopyRec(None, self)
+
+    def __lt__(self, other):
+        return self.data < other.data
+
+    def __gt__(self, other):
+        return self.data > other.data
+
+    def __le__(self, other):
+        return self.data <= other.data
+
+    def __ge__(self, other):
+        return self.data >= other.data
+
+    def __eq__(self, other):
+        if type(other) == type(self):
+            return self.data == other.data
+        else:
+            return False
+
+    def __ne__(self, other):
+        if type(other) == type(self):
+            return self.data != other.data
+        else:
+            return True
 
 class TreeWidgetJSON(QtGui.QTreeWidget):
     """ A tree widget specialised for displaying a JSON.
