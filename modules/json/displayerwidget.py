@@ -389,6 +389,7 @@ class TreeWidgetJSON(QtGui.QTreeWidget):
                     dataStruct[keyName] = data
                     newItem = TreeWidgetItemJSON(keyName, type(data))
                     self.addNode(path, newItem)
+                    self.sortItems(0,0)
                     newItem.setExpanded(True)
             elif ok and keyName == "":
                 errorDialog(self, LANG["errorKeyCanNotEmpty"])
