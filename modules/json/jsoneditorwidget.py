@@ -153,7 +153,8 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             self.floatWidget.setText(str(dataSought))
             self.inputWidgetLayout.setCurrentWidget(self.floatWidget)
         elif type(dataSought) == str:
-            self.stringWidget.setText(dataSought)
+            self.stringWidget.clear()
+            self.stringWidget.insertPlainText(dataSought)
             self.inputWidgetLayout.setCurrentWidget(self.stringWidget)
         elif type(dataSought) == bool:
             self.booleanWidget.setEditText(str(dataSought))
@@ -194,7 +195,8 @@ class RoxxorEditorJSON(RoxxorEditorWidget):
             self.floatWidget.setText(str(dataStruct[self.key]))
             self.inputWidgetLayout.setCurrentWidget(self.floatWidget)
         elif type(dataStruct[self.key]) == str:
-            self.stringWidget.setText(dataStruct[self.key])
+            self.stringWidget.clear()
+            self.stringWidget.insertPlainText(dataStruct[self.key])
             self.inputWidgetLayout.setCurrentWidget(self.stringWidget)
         elif type(dataStruct[self.key]) == bool:
             self.booleanWidget.setEditText(str(dataStruct[self.key]))
